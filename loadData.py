@@ -19,7 +19,7 @@ response = client.search(
               "range": {
                 "initial.CareContactRegistrationTime": {
                   "gte": 1438570800000,
-                  "lte": 1438657200000,
+                  "lte": 1439262000000,
                   "format": "epoch_millis"
                 }
               }
@@ -34,12 +34,19 @@ response = client.search(
     "2": {
       "date_histogram": {
         "field": "start",
-        "interval": "1h",
+        "interval": "30m",
         "time_zone": "Europe/Berlin",
         "min_doc_count": 1,
         "extended_bounds": {
           "min": 1438570800000,
-          "max": 1438657200000
+          "max": 1439262000000
+        }
+      },
+      "aggs": {
+        "3": {
+          "avg": {
+            "field": "totalTime"
+          }
         }
       }
     }
@@ -48,15 +55,18 @@ response = client.search(
 )
 
 print(response['hits']['total'])
-f = open('data.txt','w')
 x = []
 y = []
+count = 0
+avg = 0
 for hit in response['aggregations']['2']['buckets']:
-    x.append(hit['key'])
-    y.append(hit['doc_count'])
-    f.write(str(hit['key']) + " " + str(hit['doc_count']) + "\n")
+    time = hit['key_as_string'][11:16]
+    x.append(int(time[:-3])*60+int(time[-2:]))
 
-f.close() 
+    count = hit['doc_count']
+    avg = hit['3']['value']
+    y.append(count*avg)
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,9 +75,7 @@ from sklearn.linear_model import Ridge
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 
-x_plot = np.linspace(1438570800000, 1438657200000, 100)
-
-# generate points and keep a subset of them
+x_plot = np.linspace(0, 1440, 100)
 
 # create matrix versions of these arrays
 x_arr = np.asarray(x)
@@ -76,12 +84,12 @@ X_plot = x_plot[:, np.newaxis]
 
 plt.scatter(x, y, label="training points")
 
-for degree in [3, 4, 5]:
+for degree in [3, 4, 5, 6]:
     model = make_pipeline(PolynomialFeatures(degree), Ridge())
     model.fit(X, y)
     y_plot = model.predict(X_plot)
     plt.plot(x_plot, y_plot, label="degree %d" % degree)
 
-plt.legend(loc='lower left')
+plt.legend(loc='upper left')
 
 plt.show()
