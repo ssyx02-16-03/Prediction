@@ -12,7 +12,8 @@ response = client.search(
     "filtered": {
       "query": {
         "query_string": {
-          "query": "*"
+          "query": "*",
+          "analyze_wildcard": True
         }
       },
       "filter": {
@@ -21,8 +22,8 @@ response = client.search(
             {
               "range": {
                 "VisitRegistrationTime": {
-                  "gte": 1456600017214,
-                  "lte": 1457342191461,
+                  "gte": 1456759721518,
+                  "lte": 1457364521518,
                   "format": "epoch_millis"
                 }
               }
@@ -37,12 +38,19 @@ response = client.search(
     "2": {
       "date_histogram": {
         "field": "VisitRegistrationTime",
-        "interval": "10m",
+        "interval": "1h",
         "time_zone": "Europe/Berlin",
         "min_doc_count": 1,
         "extended_bounds": {
-          "min": 1456600017214,
-          "max": 1457342191461
+          "min": 1456759721517,
+          "max": 1457364521517
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "TimeToDoctor"
+          }
         }
       }
     }
@@ -56,12 +64,12 @@ y_t = []
 count = 0
 avg = 0
 for hit in response['aggregations']['2']['buckets']:
-    time = hit['key_as_string'][11:16]
-    x_t.append(int(time[:-3])*60+int(time[-2:]))
-
-    count = hit['doc_count']
-    #avg = hit['1']['value']
-    y_t.append(count)
+    avg = hit['1']['value']
+    if(avg is not None):
+        time = hit['key_as_string'][11:16]
+        count = hit['doc_count']
+        x_t.append(int(time[:-3])*60+int(time[-2:]))
+        y_t.append(avg)
 
 
 import numpy as np
