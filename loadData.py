@@ -1,4 +1,6 @@
 from elasticsearch import Elasticsearch
+import numpy as np
+import json
 
 with open("elasticIP.txt") as f:
   elastic = f.readline()
@@ -6,7 +8,8 @@ client = Elasticsearch(elastic)
 
 response = client.search(
     index="*",
-    body={
+    body=
+{
   "size": 0,
   "query": {
     "filtered": {
@@ -22,8 +25,8 @@ response = client.search(
             {
               "range": {
                 "VisitRegistrationTime": {
-                  "gte": 1456759721518,
-                  "lte": 1457364521518,
+                  "gte": 1457218800000,
+                  "lte": 1457305200000,
                   "format": "epoch_millis"
                 }
               }
@@ -42,15 +45,8 @@ response = client.search(
         "time_zone": "Europe/Berlin",
         "min_doc_count": 1,
         "extended_bounds": {
-          "min": 1456759721517,
-          "max": 1457364521517
-        }
-      },
-      "aggs": {
-        "1": {
-          "avg": {
-            "field": "TimeToDoctor"
-          }
+          "min": 1457218800000,
+          "max": 1457305200000
         }
       }
     }
@@ -58,53 +54,27 @@ response = client.search(
 }
 )
 
+
 print(response['hits']['total'])
 x_t = []
 y_t = []
 count = 0
 avg = 0
 for hit in response['aggregations']['2']['buckets']:
-    avg = hit['1']['value']
-    if(avg is not None):
+    #avg = hit['1']['value']
+    #if(avg is not None):
         time = hit['key_as_string'][11:16]
         count = hit['doc_count']
         x_t.append(int(time[:-3])*60+int(time[-2:]))
-        y_t.append(avg)
+        y_t.append(count)
 
+points = []
 
-import numpy as np
-import matplotlib.pyplot as plt
+for i in np.arange(len(x_t)):
+    points.append({'tid': x_t[i], 'count': y_t[i]})
 
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
+data = {'points': points}
 
-x_plot = np.linspace(0, 1440, 100)
-
-# create matrix versions of these arrays
-y = np.asarray(y_t)
-x = np.asarray(x_t)
-X = x[:, np.newaxis]
-X_plot = x_plot[:, np.newaxis]
-
-plt.scatter(x, y, label="training points")
-
-for degree in [3, 4, 5]:
-    model = make_pipeline(PolynomialFeatures(degree), Ridge())
-    model.fit(X, y)
-    y_plot = model.predict(X_plot)
-    plt.plot(x_plot, y_plot, label="degree %d" % degree)
-
-plt.legend(loc='upper left')
-
-#plt.show()
-
- 
-from sklearn.svm import SVR
- 
-# # Fit regression model
-svr_rbf = SVR(kernel='rbf', degree=3, C=1e3)
-y_rbf = svr_rbf.fit(X, y).predict(X)
-plt.hold('on')
-plt.plot(X, y_rbf, c='g', label='RBF model')
-plt.show()
+with file('test.json', 'w') as file:
+    json.dump(data, file)
+    file.close()
