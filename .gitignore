@@ -2,6 +2,7 @@ data.txt
 elasticIP.txt
 .idea/
 *.iml
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
