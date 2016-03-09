@@ -6,11 +6,14 @@ with open("elasticIP.txt") as f:
   elastic = f.readline()
 client = Elasticsearch(elastic)
 
+startTime = "2016-03-06 00:00:00"
+endTime = "2016-03-07 00:00:00"
+
 response = client.search(
     index="*",
     body =
     {
-        "size": 1000,
+        "size": 0,
         "query": {
             "match_all" : { }
         },
@@ -19,8 +22,8 @@ response = client.search(
                 {
                     "range": {
                         "VisitRegistrationTime": {
-                            "gte": "2016-03-06 00:00:00",
-                            "lte": "2016-03-07 00:00:00",
+                            "gte": startTime,
+                            "lte": endTime,
                             "format": "yyyy-MM-dd HH:mm:ss"
                         }
                     }
