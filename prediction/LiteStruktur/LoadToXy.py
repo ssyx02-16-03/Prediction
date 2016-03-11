@@ -7,8 +7,8 @@ from sklearn.datasets.base import Bunch
 from TTTLoader import TTTLoader
 from NbrOfPatientsLoader import NbrOfPatientsLoader
 
-startTime = "2016-03-06 00:00"
-endTime = "2016-03-07 00:00"
+startTime = "2016-03-07 00:00"
+endTime = "2016-03-08 00:00"
 interval = 60
 
 ttt = TTTLoader(startTime, endTime, interval)
