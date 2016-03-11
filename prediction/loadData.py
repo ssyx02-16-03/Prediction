@@ -10,47 +10,47 @@ client = Elasticsearch(elastic)
 response = client.search(
     index="*",
     body={
-      "size": 0,
-      "query": {
-        "filtered": {
-          "query": {
-            "query_string": {
-              "analyze_wildcard": True,
-              "query": "*"
-            }
-          },
-          "filter": {
-            "bool": {
-              "must": [
-                {
-                  "range": {
-                    "VisitRegistrationTime": {
-                      "gte": 1457046000000,
-                      "lte": 1457391600000,
-                      "format": "epoch_millis"
+        "size": 0,
+        "query": {
+            "filtered": {
+                "query": {
+                    "query_string": {
+                        "analyze_wildcard": True,
+                        "query": "*"
                     }
-                  }
+                },
+                "filter": {
+                    "bool": {
+                        "must": [
+                            {
+                                "range": {
+                                    "CareContactRegistrationTime": {
+                                        "gte": 1457132400000,
+                                        "lte": 1457564400000,
+                                        "format": "epoch_millis"
+                                    }
+                                }
+                            }
+                        ],
+                        "must_not": []
+                    }
                 }
-              ],
-              "must_not": []
             }
-          }
-        }
-      },
-      "aggs": {
-        "2": {
-          "date_histogram": {
-            "field": "VisitRegistrationTime",
-            "interval": "1h",
-            "time_zone": "Europe/Berlin",
-            "min_doc_count": 1,
-            "extended_bounds": {
-              "min": 1457046000000,
-              "max": 1457391600000
+        },
+        "aggs": {
+            "2": {
+                "date_histogram": {
+                    "field": "CareContactRegistrationTime",
+                    "interval": "1h",
+                    "time_zone": "Europe/Berlin",
+                    "min_doc_count": 1,
+                    "extended_bounds": {
+                        "min": 1457132400000,
+                        "max": 1457564400000
+                    }
+                }
             }
-          }
         }
-      }
     }
 )
 
@@ -63,12 +63,13 @@ ty_t = []
 count = 0
 for hit in response['aggregations']['2']['buckets']:
     time = hit['key_as_string'][11:16]
+    day = hit['key_as_string'][8:10]
     count = hit['doc_count']
-    if(hit['key_as_string'][9:10]!="7"):
-        x_t.append(int(time[:-3])*60+int(time[-2:]))
+    if(hit['key_as_string'][9:10]!="9"):
+        x_t.append(int(day)*24*60 + int(time[:-3])*60 + int(time[-2:]))
         y_t.append(count)
     else:
-        tx_t.append(int(time[:-3])*60+int(time[-2:]))
+        tx_t.append(int(day)*24*60 + int(time[:-3])*60+int(time[-2:]))
         ty_t.append(count)
 
 

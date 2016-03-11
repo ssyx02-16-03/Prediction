@@ -1,4 +1,9 @@
+
 import numpy as np
+import pickle
+
+from sklearn.datasets.base import Bunch
+
 from TTTLoader import TTTLoader
 from NbrOfPatientsLoader import NbrOfPatientsLoader
 
@@ -19,4 +24,8 @@ x2 = numPats.load()
 X = np.column_stack([x1, x2])
 y = delayed_ttt.load()
 
-print X
+data = Bunch(data=X, target=y)
+
+with open('data.pkl', 'w') as file:
+    pickle.dump(data, file)
+    file.close()

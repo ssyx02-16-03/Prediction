@@ -52,4 +52,3 @@ class TTTLoader(Loader):
     def kass_converter(self, date_time):
         epoch = int(time.mktime(time.strptime(date_time, "%Y-%m-%dT%H:%M:%SZ"))) * 1000
         return epoch
-

@@ -11,7 +11,7 @@ class Loader(object):
         self.endTime = self.to_epoch_millis(endTime)
         self.interval = interval * 1000 * 60
 
-        with open("elasticIP.txt") as f:
+        with open("../elasticIP.txt") as f:
             elastic = f.readline()
         self.client = Elasticsearch(elastic)
 
