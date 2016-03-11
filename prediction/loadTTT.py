@@ -11,7 +11,7 @@ endTime = "2016-03-07 00:00:00"
 
 response = client.search(
     index="*",
-    body =
+    body=
     {
         "size": 0,
         "query": {
@@ -44,7 +44,7 @@ print(response['hits']['total'])
 
 # print response['hits']['hits'][1]['_source']['TimeToTriage']
 
-triage_times = [];
+triage_times = []
 
 for hit in response['hits']['hits']:
     triage_times.append(hit['_source']['TimeToTriage'])
