@@ -70,13 +70,3 @@ class TTDLoader(WaitTimeLoader):
     def __init__(self, start_time, end_time, interval_minutes):
         self.set_event(u"Läkare")
         super(TTDLoader, self).__init__(start_time, end_time, interval_minutes)
-
-
-startTime = "2016-03-06 00:00"
-endTime = "2016-03-07 00:00"
-interval = 60
-
-inst = TTDLoader(startTime, endTime, interval)
-x = inst.load_vector()
-
-print x
