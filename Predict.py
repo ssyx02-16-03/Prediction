@@ -10,7 +10,7 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
 
-with open('data.pkl', 'r') as input:
+with open('elastic_api/Xy.pkl', 'r') as input:
     dataset = pickle.load(input)
     input.close()
 X = dataset.data
@@ -18,16 +18,19 @@ y = dataset.target
 print(X)
 print(y)
 
-lr = neighbors.KNeighborsRegressor(5, weights='uniform')
-predicted = cross_val_predict(lr, X, y, cv=10)
+model_nn = neighbors.KNeighborsRegressor(5, weights='uniform')
+pred_nn = model_nn.fit(X, y).predict(X)
 
-degree = 4
-model = make_pipeline(PolynomialFeatures(degree), Ridge())
-model.fit(X, y)
-y_plot = model.predict(X)
+degree = 5
+model_poly = make_pipeline(PolynomialFeatures(degree), Ridge())
+pred_poly = model_poly.fit(X, y).predict(X)
+
+print model_nn.score(X,y)
+print model_poly.score(X,y)
 
 fig, ax = plt.subplots()
-ax.scatter(y, predicted)
+ax.scatter(y, pred_poly, c='b')
+ax.scatter(y, pred_nn, c='y')
 ax.plot([y.min(), y.max()], [y.min(), y.max()], 'k--', lw=4)
 ax.set_xlabel('Measured')
 ax.set_ylabel('Predicted')
@@ -38,7 +41,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 n = 100
 ax.scatter(X[:, 0], X[:, 1], y)
-ax.plot_wireframe(X[:, 0], X[:, 1], y_plot)
+ax.plot_wireframe(X[:, 0], X[:, 1], pred_poly)
 
 ax.set_xlabel('TTT')
 ax.set_ylabel('count')

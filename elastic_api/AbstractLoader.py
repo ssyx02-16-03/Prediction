@@ -58,3 +58,9 @@ class AbstractLoader(object):
 
     def iterations(self):
         return int((self.end_time - self.start_time)/self.interval)
+
+    def get_time_of_day(self):
+        times = []
+        for i in range(0, (self.end_time-self.start_time)/(self.interval), ):
+            times.append(i%24)
+        return times

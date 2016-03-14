@@ -1,5 +1,5 @@
 data.txt
-elasticIP.txt
+**/elasticIP.txt
 .idea/
 *.iml
 *.json
