@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from elasticsearch import Elasticsearch
 import numpy as np
 import time
-
+import os
 
 class AbstractLoader(object):
 
@@ -19,7 +19,8 @@ class AbstractLoader(object):
         self.end_time = int(time.mktime(time.strptime(end_time, "%Y-%m-%d %H:%M"))) * 1000
         self.interval = interval_minutes * 1000 * 60
 
-        with open("./elasticIP.txt") as f:
+        file_name = os.path.join(os.path.dirname(__file__), 'elasticIP.txt')
+        with open(file_name) as f:
             elastic = f.readline()
         self.client = Elasticsearch(elastic)
 
@@ -64,3 +65,9 @@ class AbstractLoader(object):
         for i in range(0, (self.end_time-self.start_time)/(self.interval), ):
             times.append(i%24)
         return times
+
+    def get_times(self):
+        """
+        :return: vektorn med tider, i epoch_millis
+        """
+        return np.linspace(self.start_time + self.interval, self.end_time, self.iterations())

@@ -70,4 +70,3 @@ class TTDLoader(WaitTimeLoader):
     def __init__(self, start_time, end_time, interval_minutes):
         self.set_event(u"Läkare")
         super(TTDLoader, self).__init__(start_time, end_time, interval_minutes)
-
