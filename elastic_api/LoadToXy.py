@@ -5,6 +5,7 @@ from sklearn.datasets.base import Bunch
 
 from WaitTimeLoaders import TTTLoader, TTDLoader
 from ColorLoaders import RedsLoader, YellowsLoader, OrangesLoader, GreensLoader, BluesLoader
+from TeamLoaders import NakbaLoader, NakkiLoader, NakkkLoader, NakmeLoader, NakmLoader, NakonLoader, NakorLoader
 from OngoingsLoader import OngoingsLoader
 
 start_time = "2016-03-07 00:00"
