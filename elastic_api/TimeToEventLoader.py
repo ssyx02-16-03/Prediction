@@ -12,7 +12,7 @@ class TimeToEventLoader(AbstractLoader):
     def set_search_removed(self):
         self.event_name = "TotalTime"
 
-    def load_value(self, start_time, interval_minutes):
+    def load_value(self, start_time, interval_millisecs):
         """
         Returns a list of values for TTT, TTD or TTK from a given interval. One time value is added to the list for each
         patient that was triaged/doctored/finished during the interval. This method will not cooperate unless one of the
@@ -26,6 +26,7 @@ class TimeToEventLoader(AbstractLoader):
         if self.event_name is None:  # if set_search_x has not been called, initiate self destruct
             raise Exception  # it actually crashes before it can throw the exception but this looks nice
 
+        interval_minutes = interval_millisecs / 60 / 1000
         end_time = start_time + interval_minutes * 60 * 1000
 
         # i'm afraid i have to do this
@@ -50,7 +51,17 @@ class TimeToEventLoader(AbstractLoader):
             if time_to_event != -1 and start_time < event_time < end_time:
                 event_times.insert(0, time_to_event)
 
-        return event_times
+        # calculate average time from list of times and return
+        t = 0
+        n  = 0
+        for event_time in event_times:
+            t += event_time
+            n += 1
+
+        if n is not 0:  # check for division by zero
+            return t / n
+        else:
+            return -1  # if list is empty, return -1
 
     def patients_present(self, start_time, end_time):
         """
