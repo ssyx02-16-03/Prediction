@@ -12,13 +12,13 @@ class TimeToEventLoader(AbstractLoader):
     def set_search_removed(self):
         self.event_name = "TotalTime"
 
-    def load_value(self, time_point, interval_minutes):
+    def load_value(self, start_time, interval_minutes):
         """
         Returns a list of values for TTT, TTD or TTK from a given interval. One time value is added to the list for each
         patient that was triaged/doctored/finished during the interval. This method will not cooperate unless one of the
         set_search methods are called first.
 
-        :param time_point: start time for the search
+        :param start_time: start time for the search in epoch-millis
         :param interval_minutes: duration of the search; is added to time_point to calculate end_time
         :return: list of time_to_event in milliseconds
         """
@@ -26,7 +26,6 @@ class TimeToEventLoader(AbstractLoader):
         if self.event_name is None:  # if set_search_x has not been called, initiate self destruct
             raise Exception  # it actually crashes before it can throw the exception but this looks nice
 
-        start_time = int(time.mktime(time.strptime(time_point, "%Y-%m-%d %H:%M"))) * 1000
         end_time = start_time + interval_minutes * 60 * 1000
 
         # i'm afraid i have to do this
