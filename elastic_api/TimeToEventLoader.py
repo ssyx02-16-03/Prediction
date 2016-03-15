@@ -1,5 +1,6 @@
 from AbstractLoader import AbstractLoader
 import time
+import parse_date
 
 
 class TimeToEventLoader(AbstractLoader):
@@ -26,14 +27,10 @@ class TimeToEventLoader(AbstractLoader):
         if self.event_name is None:  # if set_search_x has not been called, initiate self destruct
             raise Exception  # it actually crashes before it can throw the exception but this looks nice
 
-        interval_minutes = interval_millisecs / 60 / 1000
-        end_time = start_time + interval_minutes * 60 * 1000
-
-        # i'm afraid i have to do this
-        end_time_timezone_fulhack = start_time + (interval_minutes+60) * 60 * 1000  # TODO remove when timezones are fixed
+        end_time = start_time + interval_millisecs
 
         # Get all patients that were present at any time during hte given interval
-        response = self.patients_present(start_time, end_time_timezone_fulhack)
+        response = self.patients_present(start_time, end_time)
 
         event_times = []
         hits = response["hits"]["hits"]  # dig up list of patients from response
@@ -44,16 +41,17 @@ class TimeToEventLoader(AbstractLoader):
                 # if no value is found, set time to -1. this is specifically for ongoing patients missing TotalTime
                 time_to_event = -1
 
-            care_contact_registration_time = date_to_millis(patient["fields"]["CareContactRegistrationTime"][0])
+            care_contact_registration_time = parse_date.date_to_millis(patient["fields"]["CareContactRegistrationTime"][0])
             event_time = care_contact_registration_time + time_to_event
 
             # if triage happened on our interval, add time_to_triage to the list of times
-            if time_to_event != -1 and start_time < event_time < end_time:
+            if time_to_event != -1 and start_time <= event_time < end_time:
                 event_times.insert(0, time_to_event)
 
         # calculate average time from list of times and return
+        # print event_times
         t = 0
-        n  = 0
+        n = 0
         for event_time in event_times:
             t += event_time
             n += 1
@@ -109,10 +107,4 @@ class TimeToEventLoader(AbstractLoader):
             }
         )
 
-
-def date_to_millis(date):
-    """
-    transform a non-timezoned date to epoch-millis. If date is timezoned it will crash.
-    """
-    return long(time.mktime(time.strptime(date, u"%Y-%m-%dT%H:%M:%SZ"))) * 1000
 
