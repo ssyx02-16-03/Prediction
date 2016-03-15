@@ -9,8 +9,9 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.svm import SVR
 
-with open('elastic_api/Xy.pkl', 'r') as input:
+with open('/home/elin/Programming/git/Prediction/elastic_api/Xy.pkl', 'r') as input:
     dataset = pickle.load(input)
     input.close()
 X = dataset.data
@@ -18,10 +19,13 @@ y = dataset.target
 print(X)
 print(y)
 
+model_rbf = SVR(C=1.0, epsilon=0.2)
+pred_rbf = model_rbf.fit(X, y).predict(X)
+
 model_nn = neighbors.KNeighborsRegressor(5, weights='uniform')
 pred_nn = model_nn.fit(X, y).predict(X)
 
-degree = 5
+degree = 3
 model_poly = make_pipeline(PolynomialFeatures(degree), Ridge())
 pred_poly = model_poly.fit(X, y).predict(X)
 
