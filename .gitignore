@@ -1,5 +1,6 @@
 data.txt
 **/elasticIP.txt
+**/amq_config
 .idea/
 *.iml
 *.json
