@@ -3,7 +3,7 @@ from stompest.sync import Stomp
 import json
 
 
-class Interface:
+class AMQCommunication:
     """
     This class connects to an activeMQ instance and sends messages to it on /topic/webserver_package. It will need a
     proper ./amq_config to work.
