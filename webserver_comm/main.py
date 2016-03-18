@@ -4,8 +4,8 @@ from elastic_api.CurrentFieldsLoader import CurrentFieldsLoader
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 import json
 
-from RoomOccupation import RoomOccupation
-from TimeToEvent import TimeToEvent
+import RoomOccupation
+import TimeToEvent
 
 FRAME_TIME_INTERVAL = 0.5  # seconds
 amq = AMQCommunication.AMQCommunication()

@@ -1,71 +1,73 @@
 from elastic_api.CurrentFieldsLoader import CurrentFieldsLoader
 
 
-class RoomOccupation:
-    @staticmethod
-    def run():
-        """
-        DON NOT USE: WORK IN PROGRESS
-        :return:
-        """
-        loader = CurrentFieldsLoader("0001-01-01 00:00", "0001-01-01 00:00", 0)
-        loader.set_fields(["Location"])
-        raw = loader.load_value(0, 0)
+def run():
+    """
+    This function queries the database for all occupied rooms. A list is compiled of all existing rooms and their number
+    of occupants; room_json. A list is also compiled for all occupied rooms that were not expected to exist;
+    weird_rooms_json.
+    :return: json containing all rooms and their number of occupants
+    """
+    loader = CurrentFieldsLoader("0001-01-01 00:00", "0001-01-01 00:00", 0)
+    loader.set_fields(["Location"])
+    raw = loader.load_value(0, 0)
 
-        occupied_rooms = []
-        for hit in raw["hits"]["hits"]:
-            occupied_rooms.append(hit["fields"]["Location"][0])
+    occupied_rooms = []
+    for hit in raw["hits"]["hits"]:
+        occupied_rooms.append(hit["fields"]["Location"][0])
 
-        weird_rooms = []
-        rooms = Rooms().rooms
-        for occupied_room in occupied_rooms:
-            found = False
-            for room in rooms:
-                for name in room.names:
-                    if str(occupied_room).lower() == name:
-                        room.occupants += 1
-                        found = True
-                        break
-            if not found:
-                weird_rooms.append(occupied_room)
-
-        weird_rooms_json = []
-        for room in weird_rooms:
-            found = False
-            for weird_room_json in weird_rooms_json:
-                if room == weird_room_json["name"]:
-                    weird_room_json["occupants"] += 1
-                    found = True
-                    break
-            if not found:
-                weird_rooms_json.append({
-                    "name": room,
-                    "occupants": 1
-                })
-
-        room_json = []
+    # traverse list of occupied rooms
+    weird_rooms = []
+    rooms = Rooms().rooms
+    for occupied_room in occupied_rooms:
+        found = False
         for room in rooms:
-            room_json.append({
-                "name": room.names[0],
-                "occupants": room.occupants
+            for name in room.names:
+                if str(occupied_room).lower() == name:  # flatten to lower case because json extractor uppercase them
+                    room.occupants += 1
+                    found = True  # set found to true because it is not a weird_room
+                    break
+        if not found:  # if occupied_room was nowhere in Rooms().rooms it is a weird_room
+            weird_rooms.append(occupied_room)
+
+    # create json file for weird rooms
+    weird_rooms_json = []
+    for room in weird_rooms:
+        found = False
+        for weird_room_json in weird_rooms_json:
+            if room == weird_room_json["name"]:
+                weird_room_json["occupants"] += 1
+                found = True
+                break
+
+        if not found:
+            weird_rooms_json.append({
+                "name": room,
+                "occupants": 1
             })
 
-        return {
-            "rooms": room_json,
-            "weird_rooms": weird_rooms_json
-        }
+    # create json file for rooms
+    room_json = []
+    for room in rooms:
+        room_json.append({
+            "name": room.names[0],
+            "occupants": room.occupants
+        })
 
+    return {
+        "rooms": room_json,
+        "weird_rooms": weird_rooms_json
+    }
 
 
 class Room:
     """
     This object represents one room in the emergency room.
-    :param names a list of all the names the room is known by. This needs to be a list because there is no real
-    names[0] is supposed to match the name on the actual map.
+    :param names a list of all the names the room is known by. names[0] is supposed to match the name on the actual map.
     """
     def __init__(self, names, department):
         self.names = names
-        self.department = department
+        self.department = department  # this is currently not used for anything
         self.occupants = 0
 
 
