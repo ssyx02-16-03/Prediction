@@ -1,1 +1,0 @@
-'port of the scala module "StatisticsService" '
