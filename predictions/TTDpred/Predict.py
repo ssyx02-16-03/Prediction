@@ -38,7 +38,7 @@ y = y/6000
 
 fig, ax = plt.subplots()
 ax.scatter(y, pred_lr, c='g')
-ax.scatter(y, pred_poly, c='b')
+#ax.scatter(y, pred_poly, c='b')
 ax.scatter(y, pred_nn, c='y')
 ax.plot([y.min(), y.max()], [y.min(), y.max()], 'k--', lw=4)
 ax.set_xlabel('Measured')
