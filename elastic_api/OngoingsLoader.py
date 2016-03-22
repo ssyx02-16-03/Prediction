@@ -64,3 +64,4 @@ class OngoingsLoader(AbstractLoader):
         :param match: match-objekt enligt elastics syntax, ex: {"match": {"Priority": "Gul"}}
         """
         self.match = match
+

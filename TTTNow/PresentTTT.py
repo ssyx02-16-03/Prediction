@@ -23,13 +23,13 @@ class PresentTTT(object):
         ttt = np.array([])
 
         for patient in patients:
-            patient_ttt = patient['_source']['TimeToTriage']
+            patient_ttt = int(patient['_source']['TimeToTriage'])
 
             if patient_ttt > 0:
                 bad_format_seat_time = patient['_source']['CareContactRegistrationTime']
                 patient_seat_time = int(time.mktime(time.strptime(bad_format_seat_time, "%Y-%m-%dT%H:%M:%SZ"))) * 1000
 
-                seat_times = np.append(seat_times, patient_seat_time)
+                seat_times = np.append(seat_times, int(patient_seat_time))
                 ttt = np.append(ttt, patient_ttt)
 
         self.ttt = ttt
