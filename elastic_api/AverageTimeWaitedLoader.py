@@ -3,7 +3,28 @@ import parse_date
 
 
 class AverageTimeWaitedLoader(AbstractLoader):
+    def set_search_triage(self):
+        self.event_name = "TimeToTriage"
+
+    def set_search_doctor(self):
+        self.event_name = "TimeToDoctor"
+
+    def set_search_removed(self):
+        self.event_name = "TotalTime"
+
     def load_value(self, time_point, interval_unused):
+        """
+        This finds every patient in queue at a given time and then calculates how long they have been waiting, on
+        average. Like its Loader siblings UntriagedLoader and TimeToEventLoader it will not work unless
+        set_search_something is called.
+
+        Plotting this over time yields an interesting saw-toothy graph.
+
+        :param time_point: point in time to analyse
+        :param interval_unused: this really is unused, we are looking at a point in time
+        :return: average time spent in queue for patients in queue at the given point in time
+        """
+
         # Get all patients that were present at any time during hte given interval
         response = self.patients_present(time_point)
 
@@ -11,7 +32,12 @@ class AverageTimeWaitedLoader(AbstractLoader):
         time_waited = 0
         count = 0
         for patient in hits:
-            time_to_event = patient["fields"]["TimeToTriage"][0]
+            try:
+                time_to_event = patient["fields"][self.event_name][0]
+            except KeyError:
+                # if no value is found, set time to -1. this is specifically for ongoing patients missing TotalTime
+                time_to_event = -1
+
             care_contact_registration_time = parse_date.date_to_millis(patient["fields"]["CareContactRegistrationTime"][0])
             event_time = care_contact_registration_time + time_to_event
 
@@ -35,7 +61,7 @@ class AverageTimeWaitedLoader(AbstractLoader):
             body=
             {
                 "size": 10000,
-                "fields": ["CareContactRegistrationTime", "TimeToTriage"],
+                "fields": ["CareContactRegistrationTime", self.event_name],
                 "query": {
                     "match_all": {}
                 },

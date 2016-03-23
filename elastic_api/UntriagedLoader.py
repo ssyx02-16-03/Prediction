@@ -3,7 +3,26 @@ import parse_date
 
 
 class UntriagedLoader(AbstractLoader):
+    """
+    This class can also count how many patients are waiting for doctor
+    """
+
+    def set_search_triage(self):
+        self.event_name = "TimeToTriage"
+
+    def set_search_doctor(self):
+        self.event_name = "TimeToDoctor"
+
     def load_value(self, time_point, interval_unused):
+        """
+        This simply counts how many patients were waiting for triage or doctor at a given time.
+        set_search_triage or set_search_doctor must be called before calling this method.
+
+        :param time_point: point in time of sample
+        :param interval_unused: this really does nothing, is here to keep the abstract super method happy.
+        :return:
+        """
+
         # Get all patients that were present at any time during hte given interval
         response = self.patients_present(time_point)
 
