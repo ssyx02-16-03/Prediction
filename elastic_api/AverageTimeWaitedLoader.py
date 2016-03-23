@@ -2,12 +2,13 @@ from AbstractLoader import AbstractLoader
 import parse_date
 
 
-class UntriagedLoader(AbstractLoader):
+class AverageTimeWaitedLoader(AbstractLoader):
     def load_value(self, time_point, interval_unused):
         # Get all patients that were present at any time during hte given interval
         response = self.patients_present(time_point)
 
         hits = response["hits"]["hits"]  # dig up list of patients from response
+        time_waited = 0
         count = 0
         for patient in hits:
             time_to_event = patient["fields"]["TimeToTriage"][0]
@@ -17,8 +18,11 @@ class UntriagedLoader(AbstractLoader):
             # if patient was never triaged or if triage had not happened yet
             if time_point < event_time or (time_to_event == -1 and patient["_index"] == "on_going_patient_index"):
                 count += 1
+                time_waited += (time_point - care_contact_registration_time)
 
-        return count
+        if count is not 0:
+            return time_waited / count
+        return -1
 
     def patients_present(self, time_point):
         """
@@ -66,3 +70,5 @@ class UntriagedLoader(AbstractLoader):
                 }
             }
         )
+
+
