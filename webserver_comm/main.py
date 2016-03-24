@@ -12,7 +12,6 @@ amq = AMQCommunication.AMQCommunication()
 ONE_HOUR_MILLISECS = 60*60*1000
 
 
-
 def main():
     """
     Calls iteration() with FRAME_TIME_INTERVAL intervals

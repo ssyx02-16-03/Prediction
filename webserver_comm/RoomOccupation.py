@@ -42,16 +42,29 @@ def run():
 
         if not found:
             weird_rooms_json.append({
-                "name": room,
-                "occupants": 1
+                "room": room,
+                "occupied": True  # if someone is in the room, someone is in the room
             })
 
     # create json file for rooms
-    room_json = []
+    room_json = {
+        "nowhere":          [],
+        "waiting":          [],
+        "infection":        [],
+        "triage":           [],
+        "medicineYellow":   [],
+        "medicineBlue":     [],
+        "jour":             [],
+        "orthoped":         [],
+        "ort_cast":         [],
+        "surgery":          [],
+        "acute":            []
+    }
+
     for room in rooms:
-        room_json.append({
-            "name": room.names[0],
-            "occupants": room.occupants
+        room_json[room.department].append({
+            "room":         room.names[0],
+            "occupied":    room.occupants > 0,
         })
 
     return {
@@ -67,7 +80,7 @@ class Room:
     """
     def __init__(self, names, department):
         self.names = names
-        self.department = department  # this is currently not used for anything
+        self.department = department
         self.occupants = 0
 
 
@@ -92,46 +105,51 @@ class Rooms:
             Room(["T8", "8"], "triage"),
             Room(["T9", "9"], "triage"),
 
-            Room(["g10", "10"], "yellow"),
-            Room(["g11", "11"], "yellow"),
-            Room(["g12", "12"], "yellow"),
-            Room(["g13", "13"], "yellow"),
-            Room(["g14", "14"], "yellow"),
-            Room(["g15", "15"], "yellow"),
-            Room(["g16", "16"], "yellow"),
-            Room(["g17", "17"], "yellow"),
-            Room(["g18", "18"], "yellow"),
+            Room(["g10", "10"], "medicineYellow"),
+            Room(["g11", "11"], "medicineYellow"),
+            Room(["g12", "12"], "medicineYellow"),
+            Room(["g13", "13"], "medicineYellow"),
+            Room(["g14", "14"], "medicineYellow"),
+            Room(["g15", "15"], "medicineYellow"),
+            Room(["g16", "16"], "medicineYellow"),
+            Room(["g17", "17"], "medicineYellow"),
+            Room(["g18", "18"], "medicineYellow"),
 
-            Room(["b19", "19"], "blue"),
-            Room(["b20", "20"], "blue"),
-            Room(["b21", "21"], "blue"),
-            Room(["b22", "22"], "blue"),
-            Room(["b23", "23"], "blue"),
-            Room(["b24", "24"], "blue"),
-            Room(["b25", "25"], "blue"),
-            Room(["b26", "26"], "blue"),
-            Room(["b27", "27"], "blue"),
+            Room(["b19", "19"], "medicineBlue"),
+            Room(["b20", "20"], "medicineBlue"),
+            Room(["b21", "21"], "medicineBlue"),
+            Room(["b22", "22"], "medicineBlue"),
+            Room(["b23", "23"], "medicineBlue"),
+            Room(["b24", "24"], "medicineBlue"),
+            Room(["b25", "25"], "medicineBlue"),
+            Room(["b26", "26"], "medicineBlue"),
+            Room(["b27", "27"], "medicineBlue"),
 
-            Room(["30"], "barn_gyn_onh"),
-            Room(["31"], "barn_gyn_onh"),
-            Room(["32"], "barn_gyn_onh"),
-            Room(["33"], "barn_gyn_onh"),
-            Room(["34"], "barn_gyn_onh"),
-            Room(["35"], "barn_gyn_onh"),
-            Room(["46"], "barn_gyn_onh"),
+            Room(["30"], "jour"),
+            Room(["31"], "jour"),
+            Room(["32"], "jour"),
+            Room(["33"], "jour"),
+            Room(["34"], "jour"),
+            Room(["35"], "jour"),
+            Room(["46"], "jour"),
 
-            Room(["36"],  "orthopedia"),
-            Room(["37"],  "orthopedia"),
-            Room(["38"],  "orthopedia"),
-            Room(["39"],  "orthopedia"),
-            Room(["40"],  "orthopedia"),
-            Room(["41"],  "orthopedia"),
-            Room(["42"],  "orthopedia"),
-            Room(["43"],  "orthopedia"),
-            Room(["44"],  "orthopedia"),
-            Room(["45"],  "orthopedia"),
-            Room(["47", "47a", "47b"], "orthopedia"),
-            Room(["48", "48a", "48b"], "orthopedia"),
+            Room(["36"],  "orthoped"),
+            Room(["37"],  "orthoped"),
+            Room(["38"],  "orthoped"),
+            Room(["39"],  "orthoped"),
+            Room(["40"],  "orthoped"),
+            Room(["41"],  "orthoped"),
+            Room(["42"],  "orthoped"),
+            Room(["43"],  "orthoped"),
+            Room(["44"],  "orthoped"),
+            Room(["45"],  "orthoped"),
+
+            Room(["47"], "ort_cast"),
+            Room(["47a"], "ort_cast"),
+            Room(["47b"], "ort_cast"),
+            Room(["48"], "ort_cast"),
+            Room(["48a"], "ort_cast"),
+            Room(["48b"], "ort_cast"),
 
             Room(["50", "k50"], "surgery"),
             Room(["51", "k51"], "surgery"),
@@ -148,8 +166,8 @@ class Rooms:
             Room(["62", "k62"], "surgery"),
             Room(["63", "k63"], "surgery"),
 
-            Room(["A1"], "ambulance"),
-            Room(["A2"], "ambulance"),
-            Room(["A3"], "ambulance"),
-            Room(["A4"], "ambulance")
+            Room(["A1"], "acute"),
+            Room(["A2"], "acute"),
+            Room(["A3"], "acute"),
+            Room(["A4"], "acute")
         ]

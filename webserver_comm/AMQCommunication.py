@@ -29,3 +29,4 @@ class AMQCommunication:
         })
         self.client.send(self.topic, package)
         print "package sent: " + package
+
