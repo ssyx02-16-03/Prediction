@@ -27,14 +27,15 @@ def iteration():
     """
     One run of the loop.
     """
-    data = TimeToEvent.run("Triage", 10, ONE_HOUR_MILLISECS)
-    amq.send_package("triage_times_array", data)
+    # Commented because they will most likely not be used.
+    # data = TimeToEvent.run("Triage", 10, ONE_HOUR_MILLISECS)
+    # amq.send_package("triage_times_array", data)
 
-    data = TimeToEvent.run("Doctor", 10, ONE_HOUR_MILLISECS)
-    amq.send_package("doctor_times_array", data)
+    # data = TimeToEvent.run("Doctor", 10, ONE_HOUR_MILLISECS)
+    # amq.send_package("doctor_times_array", data)
 
-    data = TimeToEvent.run("Removed", 10, ONE_HOUR_MILLISECS)
-    amq.send_package("removed_times_array", data)
+    # data = TimeToEvent.run("Removed", 10, ONE_HOUR_MILLISECS)
+    # amq.send_package("removed_times_array", data)
 
     data = RoomOccupation.run()
     amq.send_package("room_occupation", data)
