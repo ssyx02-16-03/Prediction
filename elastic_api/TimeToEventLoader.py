@@ -46,7 +46,7 @@ class TimeToEventLoader(AbstractLoader):
 
             # if triage happened on our interval, add time_to_triage to the list of times
             if time_to_event != -1 and start_time <= event_time < end_time:
-                event_times.insert(0, time_to_event)
+                event_times.append(time_to_event)
 
         # calculate average time from list of times and return
         # print event_times
@@ -60,6 +60,37 @@ class TimeToEventLoader(AbstractLoader):
             return t / n
         else:
             return -1  # if list is empty, return -1
+
+    def get_event_times(self):
+        start_time = self.start_time
+        end_time = self.end_time
+
+        if self.event_name is None:  # if set_search_x has not been called, initiate self destruct
+            raise Exception  # it actually crashes before it can throw the exception but this looks nice
+
+        # Get all patients that were present at any time during hte given interval
+        response = self.patients_present(start_time, end_time)
+
+        event_times = []
+        arrivial_times = []
+
+        hits = response["hits"]["hits"]  # dig up list of patients from response
+        for patient in hits:
+            try:
+                time_to_event = patient["fields"][self.event_name][0]
+            except KeyError:
+                # if no value is found, set time to -1. this is specifically for ongoing patients missing TotalTime
+                time_to_event = -1
+
+            care_contact_registration_time = parse_date.date_to_millis(patient["fields"]["CareContactRegistrationTime"][0])
+            event_time = care_contact_registration_time + time_to_event
+
+            # if triage happened on our interval, add time_to_triage to the list of times
+            if time_to_event != -1 and start_time <= event_time < end_time:
+                event_times.append(event_time)
+                arrivial_times.append(care_contact_registration_time)
+        return arrivial_times, event_times
+
 
     def patients_present(self, start_time, end_time):
         """
