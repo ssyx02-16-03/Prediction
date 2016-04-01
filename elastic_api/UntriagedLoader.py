@@ -16,7 +16,7 @@ class UntriagedLoader(AbstractLoader):
     def load_value(self, time_point, interval_unused):
         """
         This simply counts how many patients were waiting for triage or doctor at a given time.
-        set_search_triage or set_search_doctor must be called before calling this method.
+        set_search_triage or set_search_doctor must be called before ca alling this method.
 
         :param time_point: point in time of sample
         :param interval_unused: this really does nothing, is here to keep the abstract super method happy.

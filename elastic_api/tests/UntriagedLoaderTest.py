@@ -9,7 +9,6 @@ end_time = "2016-03-23 18:00"
 interval = 5
 time_point = parse_date.date_to_millis(start_time)
 
-
 turbo = UntriagedLoader(start_time, end_time, interval)
 turbo.set_search_triage()
 
