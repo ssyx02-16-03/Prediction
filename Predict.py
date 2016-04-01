@@ -20,31 +20,17 @@ with open('/home/elin/Programming/git/Prediction/elastic_api/Xy.pkl', 'r') as in
 X=dataset.data
 y=dataset.target
 
-model_rbf = GridSearchCV(SVR(kernel='rbf', gamma=0.1), cv=5,
-                   param_grid={"C": [1e0, 1e1, 1e2, 1e3],
-                               "gamma": np.logspace(-2, 2, 5)})
-#model_rbf = SVR(C=1.0, epsilon=0.2)
-pred_rbf = model_rbf.fit(X, y).predict(X)
-#pred_rbf = cross_val_predict(model_rbf, X, y, cv=10)
-
-
-
 model_lr = linear_model.LinearRegression()
 #pred_lr = model_lr.fit(X, y).predict(X)
 pred_lr = cross_val_predict(model_lr, X, y, cv=10)
 
 model_nn = neighbors.KNeighborsRegressor(5, weights='distance')
-pred_nn = model_nn.fit(X, y).predict(X)
-#pred_nn = cross_val_predict(model_nn, X, y, cv=10)
+#pred_nn = model_nn.fit(X, y).predict(X)
+pred_nn = cross_val_predict(model_nn, X, y, cv=10)
 
 model_poly = make_pipeline(PolynomialFeatures(3), Ridge())
 #pred_poly = model_poly.fit(X, y).predict(X)
 pred_poly = cross_val_predict(model_poly, X, y, cv=10)
-
-print metrics.accuracy_score(y, pred_poly)
-print model_lr.score(X,y)
-print model_nn.score(X,y)
-print model_poly.score(X,y)
 
 fig, ax = plt.subplots()
 ax.scatter(y, pred_lr, c='g')

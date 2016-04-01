@@ -1,4 +1,6 @@
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
+
 from elasticsearch import Elasticsearch
 import numpy as np
 import time
@@ -65,6 +67,11 @@ class AbstractLoader(object):
         for i in range(0, (self.end_time-self.start_time)/(self.interval), 1):
             times.append((i*self.interval/(60*60*1000))%24)
         return times
+
+    def get_weekdays(self):
+        days = []
+        for i in range(self.start_time, self.end_time, self.interval):
+            days.append(datetime.fromtimestamp(i/1000).weekday())
 
     def get_times(self):
         """
