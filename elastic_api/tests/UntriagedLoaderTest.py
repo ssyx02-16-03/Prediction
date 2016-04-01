@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 start_time = "2016-03-22 18:00"
 end_time = "2016-03-23 18:00"
 interval = 5
+time_point = parse_date.date_to_millis(start_time)
+
 
 turbo = UntriagedLoader(start_time, end_time, interval)
-time_point = parse_date.date_to_millis(start_time)
+turbo.set_search_triage()
 
 print turbo.load_value(time_point, 60*60*1000)
 v = turbo.load_vector()

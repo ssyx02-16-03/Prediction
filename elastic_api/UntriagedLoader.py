@@ -29,7 +29,7 @@ class UntriagedLoader(AbstractLoader):
         hits = response["hits"]["hits"]  # dig up list of patients from response
         count = 0
         for patient in hits:
-            time_to_event = patient["fields"]["TimeToTriage"][0]
+            time_to_event = patient["fields"][self.event_name][0]
             care_contact_registration_time = parse_date.date_to_millis(patient["fields"]["CareContactRegistrationTime"][0])
             event_time = care_contact_registration_time + time_to_event
 
@@ -50,7 +50,7 @@ class UntriagedLoader(AbstractLoader):
             body=
             {
                 "size": 10000,
-                "fields": ["CareContactRegistrationTime", "TimeToTriage"],
+                "fields": ["CareContactRegistrationTime", self.event_name],
                 "query": {
                     "match_all": {}
                 },
