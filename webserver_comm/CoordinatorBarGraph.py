@@ -16,7 +16,6 @@ def run():
     # place patients into the right medicine side, based on the name of their location. If medicine side is ambiguous,
     # place them into medicine_patients_nocolor
     for patient in medicine_patients:
-        print patient["Location"]
         color = RoomOccupation.get_patient_department(patient["Location"])
         if color == "medicineYellow":
             medicine_patients_yellow.append(patient)
