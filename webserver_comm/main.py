@@ -2,6 +2,7 @@ import time
 import AMQCommunication
 import RoomOccupation
 import BarGraphs
+import RoomOverview
 
 FRAME_TIME_INTERVAL = 0.5  # seconds
 amq = AMQCommunication.AMQCommunication()
@@ -24,14 +25,15 @@ def iteration():
     One run of the loop.
     """
 
-    data = RoomOccupation.run()[0]
-    amq.send_package("room_occupation", data)
+    room_data = RoomOccupation.run()
+    amq.send_package("room_occupation", room_data[0])
+    amq.send_package("coordinator_free_rooms", room_data[1])
 
-    data = RoomOccupation.run()[1]
-    amq.send_package("coordinator_free_rooms", data)
+    amq.send_package("bar_graphs", BarGraphs.run())
 
-    data = BarGraphs.run()
-    amq.send_package("bar_graphs", data)
+    room_overview = RoomOverview.run()
+    amq.send_package("blue_side_overview", room_overview["blue"])
+    amq.send_package("yellow_side_overview", room_overview["yellow"])
 
 if __name__ == '__main__':
     main()

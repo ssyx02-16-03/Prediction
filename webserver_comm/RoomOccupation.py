@@ -221,3 +221,12 @@ class Rooms:
             Room(["A3"], "acute"),
             Room(["A4"], "acute")
         ]
+
+def get_proper_room_name(my_name):
+    rooms = Rooms()
+    for room in rooms.rooms:
+        for room_name in room.names:
+            if room_name.lower() == my_name.lower():
+                return room.names[0]
+
+    return my_name  # no match found; my_name is weird room

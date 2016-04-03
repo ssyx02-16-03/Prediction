@@ -17,7 +17,9 @@ def run():
     """
     This will return a json containing all the data needed by the bar graph on the coordinator view
     """
-    medicine_patients = get_patients("NAKME")  # aquire all medicine patients
+    elastic = GeneralQuery()
+
+    medicine_patients = elastic.get_patients_of_team("NAKME")  # aquire all medicine patients
     medicine_patients_blue = []
     medicine_patients_yellow = []
     medicine_patients_nocolor = []
@@ -33,13 +35,13 @@ def run():
             medicine_patients_nocolor.append(patient)
 
     # surgery and orthoped patients are very straightforward
-    surgery_patients = get_patients("NAKKI")
-    orthoped_patients = get_patients("NAKOR")
+    surgery_patients = elastic.get_patients_of_team("NAKKI")
+    orthoped_patients = elastic.get_patients_of_team("NAKOR")
 
     # onh/gyn/barn
-    onh_gyn_barn_patients = get_patients(u"NAKÖN") + get_patients("NAKBA")
+    onh_gyn_barn_patients = elastic.get_patients_of_team(u"NAKÖN") + elastic.get_patients_of_team("NAKBA")
 
-    all_patients = get_all_patients()
+    all_patients = elastic.get_all_patients()
 
     # with all patients aquired and sorted, start generating the data for the bar graphs
     # medicine_blue and medicine_yellow also need to sort out their room statuses
@@ -244,41 +246,3 @@ def contains(room_list, my_room):
     return False
 
 
-def get_patients(team):
-    """
-    Queries the database for all patients in the given team
-    :param team: the team to search for
-    :return: all patients currently under the given team, returned as an array
-    """
-    index = "on_going_patient_index"
-    body = {
-        "size": 10000,
-        "query": {
-            "match": {"Team": team}
-        }
-    }
-    query = elastic.query(index=index, body=body)
-    results = query["hits"]["hits"]
-    patients = []
-    for result in results:
-        patients.append(result["_source"])
-    return patients
-
-
-def get_all_patients():
-    """
-    :return: array containg all patients currently at the emergency room.
-    """
-    index = "on_going_patient_index"
-    body = {
-        "size": 10000,
-        "query": {
-            "match_all": {}
-        }
-    }
-    query = elastic.query(index=index, body=body)
-    results = query["hits"]["hits"]
-    patients = []
-    for result in results:
-        patients.append(result["_source"])
-    return patients
