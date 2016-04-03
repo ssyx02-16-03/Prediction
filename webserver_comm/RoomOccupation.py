@@ -79,6 +79,9 @@ def run():
 
 
 def get_patient_department(name):
+    if name == "":
+        return "default"
+
     first_letter = name[0]
     if first_letter == "b":
         return "medicineBlue"

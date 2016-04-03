@@ -6,6 +6,7 @@ import json
 
 import RoomOccupation
 import TimeToEvent
+import CoordinatorBarGraph
 
 FRAME_TIME_INTERVAL = 0.5  # seconds
 amq = AMQCommunication.AMQCommunication()
@@ -27,18 +28,12 @@ def iteration():
     """
     One run of the loop.
     """
-    # Commented because they will most likely not be used.
-    # data = TimeToEvent.run("Triage", 10, ONE_HOUR_MILLISECS)
-    # amq.send_package("triage_times_array", data)
-
-    # data = TimeToEvent.run("Doctor", 10, ONE_HOUR_MILLISECS)
-    # amq.send_package("doctor_times_array", data)
-
-    # data = TimeToEvent.run("Removed", 10, ONE_HOUR_MILLISECS)
-    # amq.send_package("removed_times_array", data)
 
     data = RoomOccupation.run()
     amq.send_package("room_occupation", data)
+
+    data = CoordinatorBarGraph.run()
+    amq.send_package("coordinator_bar_graph", data)
 
 if __name__ == '__main__':
     main()
