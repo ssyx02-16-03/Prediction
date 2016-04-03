@@ -50,7 +50,18 @@ def run():
                 "patient_department": get_patient_department(room)
             })
 
-    # create json file for rooms
+    # create json file for occupied rooms
+    room_occupation_status = {
+        "rooms": make_room_occupation_status(rooms),
+        "weird_rooms": weird_rooms_json
+    }
+
+    unnoccupied_room_json = make_unoccupied_rooms(rooms)
+
+    return room_occupation_status, unnoccupied_room_json
+
+
+def make_room_occupation_status(rooms):
     room_json = {
         "nowhere":          [],
         "waiting":          [],
@@ -72,14 +83,30 @@ def run():
             "patient_department":    room.patient_department
         })
 
-    return {
-        "rooms": room_json,
-        "weird_rooms": weird_rooms_json
+    return room_json
+
+
+def make_unoccupied_rooms(rooms):
+    unoccupied_room_json = {
+        "medicineBlue": [],
+        "medicineYellow": [],
+        "surgery": [],
+        "orthoped": [],
+        "jour": []
     }
+    for room in rooms:
+        if room.occupants == 0:
+            try:
+                unoccupied_room_json[room.department].append({
+                    "room": room.names[0]
+                })
+            except KeyError:
+                pass
+    return unoccupied_room_json
 
 
 def get_patient_department(name):
-    if name == "":
+    if name == "":  # dodge the array out of bounds exception
         return "default"
 
     first_letter = name[0].lower()

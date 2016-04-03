@@ -28,5 +28,5 @@ class AMQCommunication:
             "data": data
         })
         self.client.send(self.topic, package)
-        print "package sent: " + package
+        print data_type +" package sent: \n" + package + "\n\n"
 

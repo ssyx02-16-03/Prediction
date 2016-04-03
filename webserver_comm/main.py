@@ -29,8 +29,11 @@ def iteration():
     One run of the loop.
     """
 
-    data = RoomOccupation.run()
+    data = RoomOccupation.run()[0]
     amq.send_package("room_occupation", data)
+
+    data = RoomOccupation.run()[1]
+    amq.send_package("coordinator_free_rooms", data)
 
     data = CoordinatorBarGraph.run()
     amq.send_package("coordinator_bar_graph", data)
