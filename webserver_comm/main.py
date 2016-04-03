@@ -1,12 +1,7 @@
 import time
 import AMQCommunication
-from elastic_api.CurrentFieldsLoader import CurrentFieldsLoader
-from elastic_api.TimeToEventLoader import TimeToEventLoader
-import json
-
 import RoomOccupation
-import TimeToEvent
-import CoordinatorBarGraph
+import BarGraphs
 
 FRAME_TIME_INTERVAL = 0.5  # seconds
 amq = AMQCommunication.AMQCommunication()
@@ -35,12 +30,11 @@ def iteration():
     data = RoomOccupation.run()[1]
     amq.send_package("coordinator_free_rooms", data)
 
-    data = CoordinatorBarGraph.run()
+    data = BarGraphs.run()
     amq.send_package("bar_graphs", data)
 
 if __name__ == '__main__':
     main()
 
-s
 
 
