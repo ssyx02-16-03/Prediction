@@ -4,11 +4,19 @@ import RoomOccupation
 elastic = GeneralQuery()
 
 
+blue_rooms = ["19", "20", "21", "22", "23", "24", "25", "26", "27",
+              "b19", "b20", "b21", "b22", "b23", "b24", "b25", "b26", "b27"]
+
+yellow_rooms = ["10", "11", "12", "13", "14", "15", "16", "17", "18",
+                "g10", "g11", "g12", "g13", "g14", "g15", "g16", "g17", "g18"]
+
+waiting_room_names = ["ivr", "iv", "vr", "bvr", "gvr", "g", "b", "giv", "biv"]
+
+
 def run():
     """
     This will return a json containing all the data needed by the bar graph on the coordinator view
     """
-
     medicine_patients = get_patients("NAKME")  # aquire all medicine patients
     medicine_patients_blue = []
     medicine_patients_yellow = []
@@ -31,20 +39,44 @@ def run():
     # onh/gyn/barn
     onh_gyn_barn_patients = get_patients(u"NAKÖN") + get_patients("NAKBA")
 
-    # finally, find all patients that do not belong to any of NAKME, NAKKI, NAKOR, NAKÖN, NAKBA
     all_patients = get_all_patients()
-    other_department_patients = get_other_department_patients(all_patients)
+
+    # with all patients aquired and sorted, start generating the data for the bar graphs
+    # medicine_blue and medicine_yellow also need to sort out their room statuses
+    medicine_blue = BarGroup()
+    medicine_blue.make_bars(medicine_patients_blue)
+    medicine_blue.make_room_status(medicine_patients_blue, blue_rooms)
+
+    medicine_yellow = BarGroup()
+    medicine_yellow.make_bars(medicine_patients_yellow)
+    medicine_yellow.make_room_status(medicine_patients_yellow, yellow_rooms)
+
+    medicine_nocolor = BarGroup()
+    medicine_nocolor.make_bars(medicine_patients_nocolor)
+
+    surgery = BarGroup()
+    surgery.make_bars(surgery_patients)
+
+    orthoped = BarGroup()
+    orthoped.make_bars(orthoped_patients)
+
+    onhGynBarn = BarGroup()
+    onhGynBarn.make_bars(onh_gyn_barn_patients)
+
+    # all patients that do not belong to any of NAKME, NAKKI, NAKOR, NAKÖN, NAKBA
+    other_department = BarGroup()
+    other_department.make_bars(get_other_department_patients(all_patients))
 
     return {
         "total_patients":             len(all_patients),
         "untriaged":                  get_untriaged(all_patients),
-        "medicineBlue":               make_bars(medicine_patients_blue),
-        "medicineYellow":             make_bars(medicine_patients_yellow),
-        "medicineNoColor":            make_bars(medicine_patients_nocolor),
-        "surgery":                    make_bars(surgery_patients),
-        "orthoped":                   make_bars(orthoped_patients),
-        "onhGynBarn":                 make_bars(onh_gyn_barn_patients),
-        "otherDepartmentPatients":    make_bars(other_department_patients)
+        "medicineBlue":               medicine_blue.get_json(),
+        "medicineYellow":             medicine_yellow.get_json(),
+        "medicineNoColor":            medicine_nocolor.get_json(),
+        "surgery":                    surgery.get_json(),
+        "orthoped":                   orthoped.get_json(),
+        "onhGynBarn":                 onhGynBarn.get_json(),
+        "otherDepartmentPatients":    other_department.get_json()
     }
 
 
@@ -76,83 +108,140 @@ def get_untriaged(patients):
     return n
 
 
-def make_bars(patients):
-    """
-    Loops through a list of patients and counts priorities and doctor statuses. Also counts how many have been triaged.
-
-    :param patients: list of patients
-    :return: json containing all the data needed to generate the bar graph
-    """
-
-    data = BarGroup()  # create an empty bar graph dataset
-    data.totalPatients = len(patients)
-
-    for patient in patients:
-        # count how many patients are on each priority level
-        prio = patient["Priority"]
-        has_priority = True
-        if prio == u"Blå":
-            data.blue += 1
-        elif prio == u"Grön":
-            data.green += 1
-        elif prio == u"Gul":
-            data.yellow += 1
-        elif prio == u"Orange":
-            data.orange += 1
-        elif prio == u"Röd":
-            data.red += 1
-        else:
-            data.no_prio += 1
-            has_priority = False
-
-        # check what the doctor status is
-        if has_priority:  # if the patient has not been triaged, it has no doctor status
-            is_klar = False
-            for event in patient["Events"]:
-                if event["Title"] == "Klar":
-                    data.klar += 1
-                    is_klar = True
-
-            if not is_klar:  # if the patient is finished, it has no doctor status
-                if patient["TimeToDoctor"] != -1:  #
-                    data.has_doctor += 1
-
-    return data.get_json()
-
-
 class BarGroup:
     """
     This calss contains all the data needed to generate one section of the bar graph, both the priority and the doctor
-    sides.
+    sides. Also room status where applicable
     """
     def __init__(self):
+        # common data
         self.totalPatients = 0
+        self.incoming = 0
+
+        # doctor bar
         self.klar = 0
         self.has_doctor = 0
-        self.no_prio = 0
+
+        # priority bar
         self.blue = 0
         self.green = 0
         self.yellow = 0
         self.orange = 0
         self.red = 0
-        self.incoming = 0  # how is this defined?
+
+        # room status bar
+        self.has_rooms_status = False  # if this is false, get_json will not return any room data
+        self.rooms_here = 0
+        self.rooms_elsewhere = 0
+        self.inner_waiting_room = 0
+        self.at_examination = 0  # this is not well defined
+
+    def make_bars(self, patients):
+        """
+        Loops through a list of patients and counts priorities and doctor statuses. Also counts how many have been triaged.
+
+        :param patients: list of patients
+        :return: json containing all the data needed to generate the bar graph
+        """
+        self.totalPatients = len(patients)
+
+        for patient in patients:
+            # count how many patients are on each priority level
+            prio = patient["Priority"]
+            has_priority = True
+            if prio == u"Blå":
+                self.blue += 1
+            elif prio == u"Grön":
+                self.green += 1
+            elif prio == u"Gul":
+                self.yellow += 1
+            elif prio == u"Orange":
+                self.orange += 1
+            elif prio == u"Röd":
+                self.red += 1
+            else:
+                self.incoming += 1
+                has_priority = False
+
+            # check what the doctor status is
+            if has_priority:  # if the patient has not been triaged, it has no doctor status
+                is_klar = False
+                for event in patient["Events"]:
+                    if event["Title"] == "Klar":
+                        self.klar += 1
+                        is_klar = True
+
+                if not is_klar:  # if the patient is finished, it has no doctor status
+                    if patient["TimeToDoctor"] != -1:  #
+                        self.has_doctor += 1
 
     def get_json(self):
-        return {
+        priority = {  # the bar containing patient RETTS priorities
+            "blue": self.blue,
+            "green": self.green,
+            "yellow": self.yellow,
+            "orange": self.orange,
+            "red": self.red,
+        }
+        doctor_status = {  # the bar containing doctor info
             "klar": self.klar,
             "has_doctor": self.has_doctor,
-            "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.no_prio,
-            "total_patients": self.totalPatients,
-
-            "priority": {
-                "blue": self.blue,
-                "green": self.green,
-                "yellow": self.yellow,
-                "orange": self.orange,
-                "red": self.red,
-                "no_prio": self.no_prio
-            }
+            "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming,
         }
+        room_status = {  # the bar containing info on patient locations, only for medicineBlue and medicineYellow
+            "rooms_here": self.rooms_here,
+            "rooms_elsewhere": self.rooms_elsewhere,
+            "inner_waiting_room": self.inner_waiting_room,
+            "at_examination": self.at_examination
+        }
+
+        if self.has_rooms_status:  # this will be the return for medicineBlue and medicineYellow
+            return {
+                "total_patients": self.totalPatients,
+                "incoming": self.incoming,
+                "priority_status": priority,
+                "doctor_status": doctor_status,
+                "room_status":room_status
+            }
+        else:  # this will be the return for all the other deparmtents
+            return {
+                "total_patients": self.totalPatients,
+                "incoming": self.incoming,
+                "priority_status": priority,
+                "doctor_status": doctor_status,
+            }
+
+    def make_room_status(self, patients, local_rooms):
+        """
+        :param patients: lsit of patients in a deparment
+        :param local_rooms: list of names of rooms in our department
+        """
+        self.has_rooms_status = True
+        for patient in patients:
+            room = patient["Location"].lower()
+            if patient["Priority"] != "":
+                # if list of waiting room names contains our room, patient is there
+                if contains(waiting_room_names, room):
+                    self.inner_waiting_room += 1
+
+                # if input list of room names contains our room, patient is here
+                elif contains(local_rooms, room):
+                    self.rooms_here += 1
+
+                # if neither list of room names contains our room, patient is somewhere
+                else:
+                    self.rooms_elsewhere += 1
+
+
+def contains(room_list, my_room):
+    """
+    checks if my_room is in room_list
+    __contains__() did not work as intended for some reason
+    """
+    for room in room_list:
+        if room.lower() == my_room.lower():
+            return True
+    return False
 
 
 def get_patients(team):

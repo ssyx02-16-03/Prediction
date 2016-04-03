@@ -36,11 +36,11 @@ def iteration():
     amq.send_package("coordinator_free_rooms", data)
 
     data = CoordinatorBarGraph.run()
-    amq.send_package("coordinator_bar_graph", data)
+    amq.send_package("bar_graphs", data)
 
 if __name__ == '__main__':
     main()
 
-
+s
 
 
