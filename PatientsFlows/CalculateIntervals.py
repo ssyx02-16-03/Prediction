@@ -1,33 +1,38 @@
 import numpy as np
 from scipy.integrate import simps
 
+from sklearn import linear_model, neighbors
+from sklearn.linear_model import Ridge
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 
-start_time = "2016-03-22 12:00"
-end_time = "2016-04-03 12:00"
-interval = 60
+
+start_time = "2016-03-22 17:00"
+end_time = "2016-04-03 17:00"
+
 percent_new = 0.1
 percent_old = 1-percent_new
 
-ttt = TimeToEventLoader(start_time, end_time, interval)
+ttt = TimeToEventLoader(start_time, end_time, 0)
 ttt.set_search_triage()
 
 times = ttt.get_event_times()
 ttt_times = np.column_stack(times)
-ttt_times = ttt_times[np.argsort(ttt_times[:,0])]
+ttt_times = ttt_times[np.argsort(ttt_times[:,1])]
 arr_times = ttt_times[:,0]
 tri_times = ttt_times[:,1]
-#ttt_times = (ttt_times[:,1]-ttt_times[:,0])/60000
+ttt_times = (ttt_times[:,1]-ttt_times[:,0])/60000
+arr_times = np.asanyarray(arr_times)[:, np.newaxis]
+tri_times = np.asanyarray(tri_times)[:, np.newaxis]
 print ttt_times
-arr_times = np.column_stack(arr_times)[0]
-tri_times = np.column_stack(tri_times)[0]
-
 ttt_means = []
-ttt_mean = arr_times[0]-tri_times[0]
-for i in range(0, len(arr_times), 1):
-    ttt_mean = ttt_mean * percent_old + (tri_times[i]-arr_times[i]) * percent_new
+ttt_mean = ttt_times[0]
+for i in range(0, len(tri_times), 1):
+    ttt_mean = ttt_mean * percent_old + ttt_times[i] * percent_new
     ttt_means.append(ttt_mean)
-
+'''
 arr_times = arr_times[np.argsort(arr_times)]
 arrivial_speeds=[]
 arrivial_speeds.append(arr_times[1] - arr_times[0])
@@ -43,15 +48,25 @@ done_speed = tri_times[1] - tri_times[0]
 for i in range(0, len(tri_times)-1, 1):
     done_speed = done_speed * percent_old + (tri_times[i+1]-tri_times[i]) * percent_new
     done_speeds.append(done_speed)
+'''
+#arrivial_speeds = np.column_stack(arrivial_speeds)[0]/60000
+#done_speeds = np.column_stack(done_speeds)[0]/60000
+ttt_means = np.asarray(ttt_means)
+print ttt_means
 
-arrivial_speeds = np.column_stack(arrivial_speeds)[0]/60000
-done_speeds = np.column_stack(done_speeds)[0]/60000
-ttt_means = np.column_stack(ttt_means)[0]/60000
+X = (tri_times-tri_times[0])/60000
+X_plot = np.linspace(0, (X[len(X)-1])+60, 100)[:, np.newaxis]
+#degree = 10
+#model = make_pipeline(PolynomialFeatures(degree), Ridge())
+model = neighbors.KNeighborsRegressor(2, weights='distance')
 
+model.fit(X, ttt_means)
+y = model.predict(X_plot)
 import matplotlib.pyplot as plt
-plt.plot((arr_times-arrivial_speeds[0])/60000, 60/arrivial_speeds)
-plt.plot((tri_times-arrivial_speeds[0])/60000, 60/done_speeds)
-plt.plot((arr_times-arrivial_speeds[0])/60000, ttt_means)
+#plt.plot((arr_times-arrivial_speeds[0])/60000, 60/arrivial_speeds)
+#plt.plot((tri_times-arrivial_speeds[0])/60000, 60/done_speeds)
+plt.plot(X, ttt_means)
+plt.plot(X_plot, y)
 #plt.plot(arr_times, arrivial_speeds-done_speeds)
 
 plt.show()
