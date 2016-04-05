@@ -3,6 +3,7 @@ from elastic_api import parse_date
 from elastic_api.GeneralQuery import GeneralQuery
 import RoomOccupation
 import time
+from webserver_comm import name_generator
 
 blue_rooms = ["19", "20", "21", "22", "23", "24", "25", "26", "27",
               "b19", "b20", "b21", "b22", "b23", "b24", "b25", "b26", "b27"]
@@ -11,10 +12,6 @@ yellow_rooms = ["10", "11", "12", "13", "14", "15", "16", "17", "18",
                 "g10", "g11", "g12", "g13", "g14", "g15", "g16", "g17", "g18"]
 
 waiting_rooms = ["ivr", "iv", "vr", "bvr", "gvr", "g", "b", "giv", "biv"]
-
-# these lists are used to generate fake names for the patients. CarecontactId is used as the seed
-fake_first_names = ["qwert", "asdf", "namn", "bar", "foo"]
-fake_last_names = ["aaaaaaa", "bbbbbb", "cccccc", "dddddd", "sdasdas", "sdfsaerpoaiu"]
 
 # if time since last event is larger than this, "guideline_exceeded" will be True in the output json
 guideline_time_limit_minutes = 75
@@ -76,7 +73,7 @@ def make_patient_json(patient, side):
     doctor_name = get_doctor_name(patient["Events"])
 
     id = patient["CareContactId"]
-    fake_name = fake_first_names[id % len(fake_first_names)] + " " + fake_last_names[id % len(fake_last_names)]
+    fake_name = name_generator.get_name(id)
 
     last_event = get_last_event(patient["Events"])
 
