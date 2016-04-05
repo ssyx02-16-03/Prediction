@@ -9,6 +9,7 @@ from sklearn.preprocessing import PolynomialFeatures
 
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 
+
 percent_new = 0.1
 percent_old = 1-percent_new
 
@@ -22,6 +23,9 @@ def run(loader):
     wait_times = (both_times[:,1]-both_times[:,0])/60000
     arr_times = np.asanyarray(arr_times)[:, np.newaxis]
     event_times = np.asanyarray(event_times)[:, np.newaxis]
+
+    if wait_times == []:  # null check, triggers if nothing interesting happened on the interval
+        return [], []
 
     wait_means = []
     wait_mean = wait_times[0]

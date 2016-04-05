@@ -3,6 +3,7 @@ import AMQCommunication
 import RoomOccupation
 import BarGraphs
 import RoomOverview
+import coordinator_line_graphs
 
 FRAME_TIME_INTERVAL = 0.5  # seconds
 amq = AMQCommunication.AMQCommunication()
@@ -34,6 +35,9 @@ def iteration():
     room_overview = RoomOverview.run()
     amq.send_package("blue_side_overview", room_overview["blue"])
     amq.send_package("yellow_side_overview", room_overview["yellow"])
+
+    graph = coordinator_line_graphs.run()
+    amq.send_package("coordinator_line_graph", graph)
 
 if __name__ == '__main__':
     main()
