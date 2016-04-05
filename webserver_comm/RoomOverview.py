@@ -97,6 +97,7 @@ def make_patient_json(patient, side):
         },
         "has_doctor": doctor_name != "",  # if doctor has no name it does not exist
         "doctor_name": doctor_name,
+        "is_done": doctor_name == "Klar",
         "Priority": patient["Priority"]
     }
 
@@ -109,6 +110,8 @@ def get_doctor_name(events):
     """
     name = ""
     for event in events:
+        if event["Title"] == "Klar":
+            return "Klar"
         if event["Title"] == u"Läkare":
             name = event["Value"]
     return name
