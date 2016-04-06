@@ -126,10 +126,11 @@ def get_last_event(events):
     latest_time = 0
     name = ""
     for event in events:
-        new_time = parse_date.date_to_millis(event["Start"])
-        if new_time > latest_time:
-            latest_time = new_time
-            name = event["Title"]
+        if event["Title"] != "Klar":
+            new_time = parse_date.date_to_millis(event["Start"])
+            if new_time > latest_time:
+                latest_time = new_time
+                name = event["Title"]
     minutes_since = (time.time() - latest_time/1000) / 60
     if name == "":  # maybe this should instead default to arrival
         return {
