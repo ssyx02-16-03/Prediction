@@ -116,9 +116,6 @@ def get_patient_department(name):
     if first_letter == "g":
         return "medicineYellow"
 
-    if first_letter == "k":
-        return "surgery"
-
     return "default"
 
 
