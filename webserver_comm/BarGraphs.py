@@ -45,41 +45,40 @@ def run():
 
     # with all patients aquired and sorted, start generating the data for the bar graphs
     # medicine_blue and medicine_yellow also need to sort out their room statuses
-    medicine_blue = BarGroup()
+    medicine_blue = BarGroup(u"Medicin Blå")
     medicine_blue.make_bars(medicine_patients_blue)
     medicine_blue.make_room_status(medicine_patients_blue, blue_rooms)
 
-    medicine_yellow = BarGroup()
+    medicine_yellow = BarGroup("Medicin Gul")
     medicine_yellow.make_bars(medicine_patients_yellow)
     medicine_yellow.make_room_status(medicine_patients_yellow, yellow_rooms)
 
-    medicine_nocolor = BarGroup()
+    medicine_nocolor = BarGroup("Medicin Övriga")
     medicine_nocolor.make_bars(medicine_patients_nocolor)
 
-    surgery = BarGroup()
+    surgery = BarGroup("Kirurg")
     surgery.make_bars(surgery_patients)
 
-    orthoped = BarGroup()
+    orthoped = BarGroup("Ortoped")
     orthoped.make_bars(orthoped_patients)
 
-    onhGynBarn = BarGroup()
+    onhGynBarn = BarGroup("Jour")
     onhGynBarn.make_bars(onh_gyn_barn_patients)
 
     # all patients that do not belong to any of NAKME, NAKKI, NAKOR, NAKÖN, NAKBA
-    other_department = BarGroup()
+    other_department = BarGroup("Annan avdelning")
     other_department.make_bars(get_other_department_patients(all_patients))
 
-    return {
-        "total_patients":             len(all_patients),
-        "untriaged":                  get_untriaged(all_patients),
-        "medicineBlue":               medicine_blue.get_json(),
-        "medicineYellow":             medicine_yellow.get_json(),
-        "medicineNoColor":            medicine_nocolor.get_json(),
-        "surgery":                    surgery.get_json(),
-        "orthoped":                   orthoped.get_json(),
-        "onhGynBarn":                 onhGynBarn.get_json(),
-        "otherDepartmentPatients":    other_department.get_json()
-    }
+    return {"bars":[
+        get_untriaged(all_patients).get_json(),
+        medicine_blue.get_json(),
+        medicine_yellow.get_json(),
+        medicine_nocolor.get_json(),
+        surgery.get_json(),
+        orthoped.get_json(),
+        onhGynBarn.get_json(),
+        other_department.get_json()
+    ]}
 
 
 def get_other_department_patients(patients):
@@ -107,7 +106,10 @@ def get_untriaged(patients):
     for patient in patients:
         if patient["TimeToTriage"] == -1:
             n += 1
-    return n
+
+    bar = BarGroup("Inkommande")
+    bar.untriaged = n
+    return bar
 
 
 class BarGroup:
@@ -115,10 +117,13 @@ class BarGroup:
     This calss contains all the data needed to generate one section of the bar graph, both the priority and the doctor
     sides. Also room status where applicable
     """
-    def __init__(self):
+    def __init__(self, division_name):
         # common data
+        self.division_name = division_name
         self.totalPatients = 0
         self.incoming = 0
+
+        self.untriaged = 0
 
         # doctor bar
         self.klar = 0
@@ -178,39 +183,46 @@ class BarGroup:
                         self.has_doctor += 1
 
     def get_json(self):
-        priority = {  # the bar containing patient RETTS priorities
-            "blue": self.blue,
-            "green": self.green,
-            "yellow": self.yellow,
-            "orange": self.orange,
-            "red": self.red,
-        }
-        doctor_status = {  # the bar containing doctor info
-            "klar": self.klar,
-            "has_doctor": self.has_doctor,
-            "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming,
-        }
-        room_status = {  # the bar containing info on patient locations, only for medicineBlue and medicineYellow
-            "rooms_here": self.rooms_here,
-            "rooms_elsewhere": self.rooms_elsewhere,
-            "inner_waiting_room": self.inner_waiting_room,
-            "at_examination": self.at_examination
-        }
-
         if self.has_rooms_status:  # this will be the return for medicineBlue and medicineYellow
             return {
+                "division": self.division_name,
                 "total_patients": self.totalPatients,
                 "incoming": self.incoming,
-                "priority_status": priority,
-                "doctor_status": doctor_status,
-                "room_status":room_status
+
+                "untriaged": self.untriaged,
+
+                "blue": self.blue,
+                "green": self.green,
+                "yellow": self.yellow,
+                "orange": self.orange,
+                "red": self.red,
+
+                "klar": self.klar,
+                "has_doctor": self.has_doctor,
+                "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming
             }
         else:  # this will be the return for all the other deparmtents
             return {
+                "division": self.division_name,
                 "total_patients": self.totalPatients,
                 "incoming": self.incoming,
-                "priority_status": priority,
-                "doctor_status": doctor_status,
+
+                "untriaged": self.untriaged,
+
+                "blue": self.blue,
+                "green": self.green,
+                "yellow": self.yellow,
+                "orange": self.orange,
+                "red": self.red,
+
+                "klar": self.klar,
+                "has_doctor": self.has_doctor,
+                "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming,
+
+                "rooms_here": self.rooms_here,
+                "rooms_elsewhere": self.rooms_elsewhere,
+                "inner_waiting_room": self.inner_waiting_room,
+                "at_examination": self.at_examination
             }
 
     def make_room_status(self, patients, local_rooms):
