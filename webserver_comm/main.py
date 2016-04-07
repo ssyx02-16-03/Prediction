@@ -1,5 +1,5 @@
 import time
-import AMQCommunication
+from AMQCommunicationStomp import AMQCommunicationStomp
 import RoomOccupation
 import BarGraphs
 import RoomOverview
@@ -16,7 +16,7 @@ class Main:
         """
         Calls iteration() with FRAME_TIME_INTERVAL intervals
         """
-        self.amq = AMQCommunication.AMQCommunication(config)
+        self.amq = AMQCommunicationStomp(config)
         while 1:
             last_time = time.time()
             self.iteration()
@@ -44,7 +44,7 @@ class Main:
         graph = coordinator_line_graphs.run()
         self.amq.send_package("coordinator_line_graph", graph)
 
-        #smile_status.run()
+        smile_status.run()
 
 
 
