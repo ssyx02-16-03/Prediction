@@ -2,4 +2,5 @@ webserver_comm.AMQCommunication needs a file in this directory called "amq_confi
 
 your_login_to_the_bus
 your_passcode_to_the_bus
-your_ip:your_port
+your_ip
+your_port
