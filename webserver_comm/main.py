@@ -12,11 +12,11 @@ ONE_HOUR_MILLISECS = 60*60*1000
 
 
 class Main:
-    def main(self):
+    def main(self, config):
         """
         Calls iteration() with FRAME_TIME_INTERVAL intervals
         """
-        self.amq = AMQCommunication.AMQCommunication()
+        self.amq = AMQCommunication.AMQCommunication(config)
         while 1:
             last_time = time.time()
             self.iteration()
@@ -48,10 +48,8 @@ class Main:
 
 
 
-def run():
+def run(config):
     print "starting..."
-    Main().main()
+    Main().main(config)
 
 
-if __name__ == '__main__':
-    run()

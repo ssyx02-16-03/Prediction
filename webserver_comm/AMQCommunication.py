@@ -8,13 +8,13 @@ class AMQCommunication:
     This class connects to an activeMQ instance and sends messages to it on /topic/webserver_package. It will need a
     proper ./amq_config to work.
     """
-    def __init__(self):
+    def __init__(self, config):
         self.encoder = json.JSONEncoder()
 
-        with open("webserver_comm/amq_config") as file:
-            login = file.readline()
-            passcode = file.readline()
-            address = file.readline()
+
+        login = config.readline()
+        passcode = config.readline()
+        address = config.readline()
 
         print "AMQ_Communication.interface connecting to: \naddress: "+ address +"\nlogin: "+login +"passcode: "+passcode
         config = StompConfig('tcp://'+address, login, passcode)
