@@ -44,7 +44,7 @@ class Main:
         graph = coordinator_line_graphs.run()
         self.amq.send_package("coordinator_line_graph", graph)
 
-        smile_status.run()
+        #smile_status.run()
 
 
 
