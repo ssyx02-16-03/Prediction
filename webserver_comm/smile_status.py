@@ -1,11 +1,11 @@
 # coding=utf-8
-import time
 
 from elastic_api.TimeToEventConditionalLoader import TimeToEventConditionalLoader
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 from PatientsFlows import RealTimeWait
 import numpy as np
 ONE_HOUR_MILLISECONDS = 60 * 60 * 1000
+import time
 
 doctor_stable_hysteresis = 5  # minutes per minute
 doctor_normal_interval = {
@@ -65,22 +65,21 @@ def run():
 
 
 def make_json(times, normal_interval, hysteresis, lookback_samples):
-    velocity = get_velocity(times[len(times)-lookback_samples, len(times)])
+    velocity = get_velocity(times[len(times)-lookback_samples: len(times)])
     if velocity > done_stable_hysteresis:
         trend = 1
-    elif velocity < -done_stable_hysteresis:
+    elif velocity < - done_stable_hysteresis:
         trend = -1
     else:
         trend = 0
 
-    current_time = times[-1]
+    current_time = times[-1]["y"]
     if current_time > normal_interval["bad"]:
         mood = -1
     elif current_time < normal_interval["good"]:
         mood = 1
     else:
         mood = 0
-
 
     return {
         "value": current_time,
@@ -105,19 +104,24 @@ def get_trend(loader, x_plot):
 
 
 def get_velocity(times):
+    time_differences = []
+    first_time = times[0]["y"]
+    for a_time in times:
+        time_differences.append(a_time["y"] - first_time)
+
+    # print time_differences
+
+    weighted_differences = []
+    for i in range(1, len(times)):
+        weighted_differences.append(time_differences[i] / i)
+
+   # print average(weighted_differences)
+    return average(weighted_differences)
 
 
-    '''
-    var data = {
-       'ttl': {
-           'value': 129,
-           'trend': 1, // -1, 0 o 1..?
-           'mood': 1, // -1, 0 o 1..?
-       },
-       'ttk': {
-           'value': 329,
-           'trend': 0,
-           'mood': -1
-       }
-    }
-    '''
+def average(vector):
+    sum = 0
+    for v in vector:
+        sum += v
+    return sum / len(vector)
+

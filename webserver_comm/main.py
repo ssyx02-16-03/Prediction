@@ -7,7 +7,7 @@ import coordinator_line_graphs
 from webserver_comm import RecentChanges
 import smile_status
 
-FRAME_TIME_INTERVAL = 10  # seconds
+FRAME_TIME_INTERVAL = 1  # seconds
 ONE_HOUR_MILLISECS = 60*60*1000
 
 
@@ -44,7 +44,9 @@ class Main:
         graph = coordinator_line_graphs.run()
         self.amq.send_package("coordinator_line_graph", graph)
 
-        #smile_status.run()
+        smile = smile_status.run()
+        self.amq.send_package("smile_face_blue", smile["blue"])
+        self.amq.send_package("smile_face_yellow", smile["yellow"])
 
 
 
