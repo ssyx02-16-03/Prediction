@@ -7,6 +7,7 @@ from PatientsFlows import RealTimeWait
 import numpy as np
 ONE_HOUR_MILLISECONDS = 60 * 60 * 1000
 
+
 def run():
 
     x_plot = np.linspace(-120, 60, 100)

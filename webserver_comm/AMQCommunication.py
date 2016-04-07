@@ -11,7 +11,7 @@ class AMQCommunication:
     def __init__(self):
         self.encoder = json.JSONEncoder()
 
-        with open("amq_config") as file:
+        with open("webserver_comm/amq_config") as file:
             login = file.readline()
             passcode = file.readline()
             address = file.readline()
