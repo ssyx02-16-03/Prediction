@@ -5,6 +5,7 @@ data.txt
 *.iml
 *.json
 *.pkl
+**/amq_config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

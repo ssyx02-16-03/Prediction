@@ -7,16 +7,16 @@ import coordinator_line_graphs
 from webserver_comm import RecentChanges
 import smile_status
 
-FRAME_TIME_INTERVAL = 0.5  # seconds
+FRAME_TIME_INTERVAL = 10  # seconds
 ONE_HOUR_MILLISECS = 60*60*1000
 
 
 class Main:
-    def main(self, config):
+    def main(self):
         """
         Calls iteration() with FRAME_TIME_INTERVAL intervals
         """
-        self.amq = AMQCommunicationStomp(config)
+        self.amq = AMQCommunicationStomp()
         while 1:
             last_time = time.time()
             self.iteration()
@@ -48,8 +48,8 @@ class Main:
 
 
 
-def run(config):
+def run():
     print "starting..."
-    Main().main(config)
+    Main().main()
 
 

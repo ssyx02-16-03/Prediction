@@ -8,10 +8,16 @@ import numpy as np
 ONE_HOUR_MILLISECONDS = 60 * 60 * 1000
 
 doctor_stable_hysteresis = 5  # minutes per minute
-doctor_normal_interval = [45, 120]  # making up numbers as if i ran the place
+doctor_normal_interval = {
+    "good": 45,
+    "bad": 120
+}
 
 done_stable_hysteresis = 10
-done_normal_interval = [180, 360]
+done_normal_interval = {
+    "good": 180,
+    "bad": 360
+}
 
 
 def run():
@@ -48,19 +54,39 @@ def run():
 
     return {
         "blue": {
-            "ttd": make_json(ttd_blue_med),
-            "ttk": make_json(ttk_blue_med)
+            "ttd": make_json(ttd_blue_med, doctor_normal_interval, doctor_stable_hysteresis, 10),
+            "ttk": make_json(ttk_blue_med, done_normal_interval, done_stable_hysteresis, 20)
         },
         "yellow": {
-            "ttd": make_json(ttd_yellow_med),
-            "ttk": make_json(ttk_yellow_med)
+            "ttd": make_json(ttd_yellow_med, doctor_normal_interval, doctor_stable_hysteresis, 10),
+            "ttk": make_json(ttk_yellow_med, done_normal_interval, done_stable_hysteresis, 20)
         }
     }
 
 
-def make_json(v):
-    print v
-    return 2
+def make_json(times, normal_interval, hysteresis, lookback_samples):
+    velocity = get_velocity(times[len(times)-lookback_samples, len(times)])
+    if velocity > done_stable_hysteresis:
+        trend = 1
+    elif velocity < -done_stable_hysteresis:
+        trend = -1
+    else:
+        trend = 0
+
+    current_time = times[-1]
+    if current_time > normal_interval["bad"]:
+        mood = -1
+    elif current_time < normal_interval["good"]:
+        mood = 1
+    else:
+        mood = 0
+
+
+    return {
+        "value": current_time,
+        "trend": trend,
+        "mood": mood
+    }
 
 
 def get_trend(loader, x_plot):
@@ -76,3 +102,22 @@ def get_trend(loader, x_plot):
         })
 
     return trend
+
+
+def get_velocity(times):
+
+
+    '''
+    var data = {
+       'ttl': {
+           'value': 129,
+           'trend': 1, // -1, 0 o 1..?
+           'mood': 1, // -1, 0 o 1..?
+       },
+       'ttk': {
+           'value': 329,
+           'trend': 0,
+           'mood': -1
+       }
+    }
+    '''
