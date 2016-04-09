@@ -82,7 +82,7 @@ def make_json(times, normal_interval, hysteresis, lookback_samples):
         mood = 0
 
     return {
-        "value": current_time,
+        "value": int(current_time),
         "trend": trend,
         "mood": mood
     }
