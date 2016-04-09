@@ -27,8 +27,8 @@ class AMQCommunicationStomp:
     def send_package(self, data_type, data):
         package = self.encoder.encode({
             "type": data_type,
-            "data": data
+            "data": data,
+            "hash": hash(str(data))
         })
         self.c.send(self.topic, package)
         print data_type + "package sent: \n" + package + "\n\n"
-
