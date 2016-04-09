@@ -122,7 +122,8 @@ def get_vectors(loader, x_plot):
 def jsonize_ttt(v):
     return {
         "trend": v["trend"],
-        "prediction": v["prediction"]
+        "prediction": v["prediction"],
+        "current_value": v["prediction"][0]
     }
 
 

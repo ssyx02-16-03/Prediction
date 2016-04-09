@@ -1,4 +1,6 @@
 # coding=utf-8
+import calendar
+
 from elastic_api import parse_date
 from elastic_api.GeneralQuery import GeneralQuery
 import RoomOccupation
@@ -78,6 +80,7 @@ def make_patient_json(patient, side):
     last_event = get_last_event(patient["Events"])
 
     # parsing times
+
     parsed_time = time.strptime(patient["CareContactRegistrationTime"], u"%Y-%m-%dT%H:%M:%SZ")
     # adding some zeroes on manually. no preinvented wheel seemed to be readily availible so i reinvented it
     hour_of_day = str(parsed_time.tm_hour) if parsed_time.tm_hour >= 10 else "0" + str(parsed_time.tm_hour)

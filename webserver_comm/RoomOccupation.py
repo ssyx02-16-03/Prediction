@@ -47,7 +47,8 @@ def run():
                 "room": room,
                 "occupied": True,  # if someone is in the room, someone is in the room
                 "department": "unknown",
-                "patient_department": get_patient_department(room)
+                "patient_department": get_patient_department(room),
+                "occupants": 1
             })
 
     # create json file for occupied rooms

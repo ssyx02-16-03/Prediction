@@ -49,7 +49,6 @@ class Main:
         self.amq.send_package("smile_face_yellow", smile["yellow"])
 
 
-
 def run():
     print "starting..."
     Main().main()
