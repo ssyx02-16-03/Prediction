@@ -80,11 +80,12 @@ def make_patient_json(patient, side):
     last_event = get_last_event(patient["Events"])
 
     # parsing times
-
     parsed_time = time.strptime(patient["CareContactRegistrationTime"], u"%Y-%m-%dT%H:%M:%SZ")
+    timezone_offset = time.altzone / 3600
+    hour = (parsed_time.tm_hour - timezone_offset) % 24
     # adding some zeroes on manually. no preinvented wheel seemed to be readily availible so i reinvented it
-    hour_of_day = str(parsed_time.tm_hour) if parsed_time.tm_hour >= 10 else "0" + str(parsed_time.tm_hour)
-    minute_of_day  = str(parsed_time.tm_min) if parsed_time.tm_min >= 10 else "0" + str(parsed_time.tm_min)
+    hour_of_day = str(hour) if hour >= 10 else "0" + str(hour)
+    minute_of_day = str(parsed_time.tm_min) if parsed_time.tm_min >= 10 else "0" + str(parsed_time.tm_min)
     time_of_day = hour_of_day + ":" + minute_of_day
 
     return {
