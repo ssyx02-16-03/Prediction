@@ -199,7 +199,12 @@ class BarGroup:
 
                 "klar": self.klar,
                 "has_doctor": self.has_doctor,
-                "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming
+                "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming,
+
+                "rooms_here": self.rooms_here,
+                "rooms_elsewhere": self.rooms_elsewhere,
+                "inner_waiting_room": self.inner_waiting_room,
+                "at_examination": self.at_examination
             }
         else:  # this will be the return for all the other deparmtents
             return {
@@ -217,12 +222,8 @@ class BarGroup:
 
                 "klar": self.klar,
                 "has_doctor": self.has_doctor,
-                "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming,
+                "no_doctor": self.totalPatients - self.has_doctor - self.klar - self.incoming
 
-                "rooms_here": self.rooms_here,
-                "rooms_elsewhere": self.rooms_elsewhere,
-                "inner_waiting_room": self.inner_waiting_room,
-                "at_examination": self.at_examination
             }
 
     def make_room_status(self, patients, local_rooms):
