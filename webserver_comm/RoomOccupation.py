@@ -1,3 +1,4 @@
+# coding=utf-8
 from elastic_api.CurrentFieldsLoader import CurrentFieldsLoader
 
 
@@ -19,11 +20,12 @@ def run():
     # traverse list of occupied rooms
     weird_rooms = []
     rooms = Rooms().rooms
+
     for occupied_room in occupied_rooms:
         found = False
         for room in rooms:
             for name in room.names:
-                occupied_room_name = str(occupied_room).lower()
+                occupied_room_name = str(occupied_room).decode('utf-8').lower()
                 if occupied_room_name == name:  # flatten to lower case because json extractor uppercase them
                     room.occupants += 1
                     room.patient_department = get_patient_department(occupied_room_name)
@@ -110,7 +112,7 @@ def get_patient_department(name):
     if name == "":  # dodge the array out of bounds exception
         return "default"
 
-    first_letter = name[0].lower()
+    first_letter = name[0].decode('utf-8').lower()
     if first_letter == "b":
         return "medicineBlue"
 
@@ -224,7 +226,7 @@ def get_proper_room_name(my_name):
     rooms = Rooms()
     for room in rooms.rooms:
         for room_name in room.names:
-            if room_name.lower() == my_name.lower():
+            if room_name.decode('utf-8').lower() == my_name.decode('utf-8').lower():
                 return room.names[0]
 
     return my_name  # no match found; my_name is weird room

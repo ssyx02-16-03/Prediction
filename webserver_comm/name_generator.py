@@ -9,4 +9,4 @@ def get_name(id):
 
 
 def get_name_as_array(id):
-    return [first[id % len_first], last[id % len_last]]
+    return [first[id % len_first].capitalize(), last[id % len_last].capitalize()]

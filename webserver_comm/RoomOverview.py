@@ -163,7 +163,7 @@ def contains(room_list, my_room):
     __contains__() did not work as intended for some reason
     """
     for room in room_list:
-        if room.lower() == my_room.lower():
+        if room.decode('utf-8').lower() == my_room.decode('utf-8').lower():
             return True
     return False
 
