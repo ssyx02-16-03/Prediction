@@ -23,7 +23,6 @@ class AMQCommunicationStomp:
         self.c.start()
         self.c.connect(login, passcode, wait=True)
 
-
     def send_package(self, data_type, data):
         package = self.encoder.encode({
             "type": data_type,

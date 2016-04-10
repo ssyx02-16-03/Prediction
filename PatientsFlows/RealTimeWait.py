@@ -24,8 +24,10 @@ def run(loader):
     arr_times = np.asanyarray(arr_times)[:, np.newaxis]
     event_times = np.asanyarray(event_times)[:, np.newaxis]
 
+    X_plot = np.linspace(loader.start_time, loader.end_time, 300)[:, np.newaxis]
+
     if len(wait_times) == 0:  # null check, triggers if nothing interesting happened on the interval
-        return [], []
+        return [X_plot], [np.linspace(0, 0, 300)]
 
     wait_means = []
     wait_mean = wait_times[0]
@@ -36,7 +38,6 @@ def run(loader):
     wait_means = np.asarray(wait_means)
 
     X = event_times
-    X_plot = np.linspace(loader.start_time, loader.end_time, 300)[:, np.newaxis]
 
     model = neighbors.KNeighborsRegressor(2, weights='distance')
 
