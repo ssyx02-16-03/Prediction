@@ -1,7 +1,9 @@
 import numpy as np
+import matplotlib as plt
 from scipy.integrate import simps
 
 from sklearn import linear_model, neighbors
+from sklearn.gaussian_process import GaussianProcess
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
@@ -9,7 +11,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 
 
-start_time = "2016-03-22 17:00"
+start_time = "2016-03-31 17:00"
 end_time = "2016-04-03 17:00"
 
 percent_new = 0.1
@@ -58,15 +60,21 @@ X = (tri_times-tri_times[0])/60000
 X_plot = np.linspace(0, (X[len(X)-1])+60, 100)[:, np.newaxis]
 #degree = 10
 #model = make_pipeline(PolynomialFeatures(degree), Ridge())
-model = neighbors.KNeighborsRegressor(2, weights='distance')
+#model = neighbors.KNeighborsRegressor(2, weights='distance')
 
-model.fit(X, ttt_means)
-y = model.predict(X_plot)
-import matplotlib.pyplot as plt
+
+# Instanciate a Gaussian Process model
+gp = GaussianProcess(corr='cubic', theta0=1e-2, thetaL=1e-4, thetaU=1e-1,
+                     random_start=100)
+
+# Fit to data using Maximum Likelihood Estimation of the parameters
+gp.fit(X, tri_times)
+
+
 #plt.plot((arr_times-arrivial_speeds[0])/60000, 60/arrivial_speeds)
 #plt.plot((tri_times-arrivial_speeds[0])/60000, 60/done_speeds)
 plt.plot(X, ttt_means)
-plt.plot(X_plot, y)
+plt.plot(X_plot, gp.predict(X_plot))
 #plt.plot(arr_times, arrivial_speeds-done_speeds)
 
 plt.show()
