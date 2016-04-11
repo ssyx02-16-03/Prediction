@@ -223,10 +223,12 @@ class Rooms:
         ]
 
 def get_proper_room_name(my_name):
-    rooms = Rooms()
-    for room in rooms.rooms:
-        for room_name in room.names:
-            if room_name.decode('utf-8').lower() == my_name.decode('utf-8').lower():
-                return room.names[0]
-
+    try:
+        rooms = Rooms()
+        for room in rooms.rooms:
+            for room_name in room.names:
+                if room_name.decode('utf-8').lower() == my_name.decode('utf-8').lower():
+                    return room.names[0]
+    except UnicodeEncodeError:
+        return "error"
     return my_name  # no match found; my_name is weird room

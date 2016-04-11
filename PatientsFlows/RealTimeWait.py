@@ -26,7 +26,7 @@ def run(loader):
 
     X_plot = np.linspace(loader.start_time, loader.end_time, 300)[:, np.newaxis]
 
-    if len(wait_times) == 0:  # null check, triggers if nothing interesting happened on the interval
+    if not wait_times.any():  # null check, triggers if nothing interesting happened on the interval
         return [X_plot], [np.linspace(0, 0, 300)]
 
     wait_means = []
