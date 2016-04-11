@@ -39,7 +39,7 @@ def run(loader):
 
     X = event_times
 
-    model = neighbors.KNeighborsRegressor(2, weights='distance')
+    model = neighbors.KNeighborsRegressor(5, weights='distance')
 
     model.fit(X, wait_means)
     try:
