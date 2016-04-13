@@ -83,6 +83,7 @@ ttt.set_search_triage()
 X1, y1 = run(ttt)
 X_plot = np.linspace(0, end_time_min, 5*24*60)[:, np.newaxis]
 
+
 X2, y2, y3 = get_speeds(ttt)
 
 '''
@@ -98,15 +99,16 @@ y5 = wait_loader.load_vector()/60000
 X5 = wait_loader.get_times()[:, np.newaxis]
 X5 = (X5/60000-start_time_min)
 '''
-
 model = neighbors.KNeighborsRegressor(5, weights='distance')
 #model = make_pipeline(PolynomialFeatures(10), Ridge())
 model.fit(X1, y1)
 y1_p = model.predict(X_plot)
+
 model.fit(X2, y2)
 y2_p = model.predict(X_plot)
 model.fit(X1, y3)
 y3_p = model.predict(X_plot)
+
 '''
 model.fit(X4, y4)
 y4_p = model.predict(X_plot)
@@ -115,33 +117,41 @@ y5_p = model.predict(X_plot)
 '''
 
 y6_p = shift(y1_p, 30, cval=0)
-X = np.column_stack([X_plot, y1_p, y2_p, y3_p, y6_p])
+y7_p = shift(y1_p, 15, cval=0)
+X = np.column_stack([X_plot, y1_p, y2_p, y3_p, y6_p, y7_p])
 y = shift(y1_p, -30, cval=0)
-#y = y1_p
 
-#gp = GaussianProcessRegressor()
 poly = make_pipeline(PolynomialFeatures(3), Ridge())
 mpl = MLPRegressor()
-#mpl.fit(X, y)
-#model.fit(X, y)
-#y_p = model.predict(X)
-#gp_pred = cross_val_predict(gp, X, y, cv=10)
+'''
+y_t = y[-1000:-2]
+y = y[0:-1000]
+X_t = X[-1000:-2]
+X = X[0:-1000]
+mpl.fit(X, y)
+poly.fit(X, y)
+mpl_pred = mpl.predict(X_t)
+poly_pred = poly.predict(X_t)
+'''
 mpl_pred = cross_val_predict(mpl, X, y, cv=10)
 poly_pred = cross_val_predict(poly, X, y, cv=10)
+#nn_pred = cross_val_predict(model, X, y, cv=10)
 
 
 fig, ax = plt.subplots()
-ax.scatter(y, mpl_pred, c='b')
-ax.scatter(y, poly_pred, c='y')
-#ax.scatter(y, gp_pred, c='r')
+ax.scatter(y, mpl_pred, c='b', marker='x')
+ax.scatter(y, poly_pred, c='y', marker ='+')
+#ax.scatter(y, nn_pred, c='r')
 ax.plot([y.min(), y.max()], [y.min(), y.max()], 'k--', lw=4)
 ax.set_xlabel('Measured')
 ax.set_ylabel('Predicted')
 plt.show()
 
-plt.plot(X_plot, y, c='blue')
-plt.plot(X_plot, mpl_pred, c='red')
-plt.plot(X_plot, poly_pred, c='pink')
+X = X_plot
+plt.plot(X, y, c='blue')
+plt.plot(X, mpl_pred, c='red')
+plt.plot(X, poly_pred, c='cyan')
+#plt.plot(X, nn_pred, c='green')
 plt.plot(X_plot, y1_p, c='green')
 plt.plot(X_plot, y2_p, c='purple')
 plt.plot(X_plot, y3_p, c='orange')
