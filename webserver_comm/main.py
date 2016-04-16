@@ -52,5 +52,3 @@ class Main:
 def run():
     print "starting..."
     Main().main()
-
-

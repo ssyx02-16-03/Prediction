@@ -25,7 +25,8 @@ def run():
         found = False
         for room in rooms:
             for name in room.names:
-                occupied_room_name = str(occupied_room).decode('utf-8').lower()
+                occupied_room_name = occupied_room.encode('utf-8').lower()
+                print occupied_room_name
                 if occupied_room_name == name:  # flatten to lower case because json extractor uppercase them
                     room.occupants += 1
                     room.patient_department = get_patient_department(occupied_room_name)
@@ -112,7 +113,7 @@ def get_patient_department(name):
     if name == "":  # dodge the array out of bounds exception
         return "default"
 
-    first_letter = name[0].decode('utf-8').lower()
+    first_letter = name[0].lower()
     if first_letter == "b":
         return "medicineBlue"
 
