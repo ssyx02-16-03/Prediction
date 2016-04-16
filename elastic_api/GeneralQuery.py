@@ -51,3 +51,23 @@ class GeneralQuery:
             patients.append(result["_source"])
         return patients
 
+
+    def get_all_finished_patients(self):
+        """
+        :return: array containg all patients currently at the emergency room.
+        """
+        index = "finished_patient_index"
+
+        body = {
+            "size": 10000,
+            "query": {
+                "match_all": {}
+            }
+        }
+        query = self.query(index=index, body=body)
+        results = query["hits"]["hits"]
+        patients = []
+        for result in results:
+            patients.append(result["_source"])
+        return patients
+
