@@ -233,7 +233,7 @@ class BarGroup:
         """
         self.has_rooms_status = True
         for patient in patients:
-            room = patient["Location"].decode('utf-8').lower()
+            room = patient["Location"].encode('utf-8').lower()
             if patient["Priority"] != "":
                 # if list of waiting room names contains our room, patient is there
                 if contains(waiting_room_names, room):
@@ -254,7 +254,7 @@ def contains(room_list, my_room):
     __contains__() did not work as intended for some reason
     """
     for room in room_list:
-        if room.decode('utf-8').lower() == my_room.decode('utf-8').lower():
+        if room.lower() == my_room.lower():
             return True
     return False
 

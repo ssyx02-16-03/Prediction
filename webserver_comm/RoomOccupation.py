@@ -26,7 +26,6 @@ def run():
         for room in rooms:
             for name in room.names:
                 occupied_room_name = occupied_room.encode('utf-8').lower()
-                print occupied_room_name
                 if occupied_room_name == name:  # flatten to lower case because json extractor uppercase them
                     room.occupants += 1
                     room.patient_department = get_patient_department(occupied_room_name)
@@ -228,7 +227,7 @@ def get_proper_room_name(my_name):
         rooms = Rooms()
         for room in rooms.rooms:
             for room_name in room.names:
-                if room_name.decode('utf-8').lower() == my_name.decode('utf-8').lower():
+                if room_name.encode('utf-8').lower() == my_name.encode('utf-8').lower():
                     return room.names[0]
     except UnicodeEncodeError:
         return "error"
