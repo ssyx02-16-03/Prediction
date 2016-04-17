@@ -29,24 +29,25 @@ class Main:
         """
 
         room_data = RoomOccupation.run()
-        #self.amq.send_package("room_occupation", room_data[0])
-        #self.amq.send_package("coordinator_free_rooms", room_data[1])
+        self.amq.send_package("room_occupation", room_data[0])
+        self.amq.send_package("coordinator_free_rooms", room_data[1])
 
-        self.amq.send_package("bar_graphs", BarGraphs.run())
+        bars = BarGraphs.run()
+        self.amq.send_package("bar_graphs", bars)
 
         room_overview = RoomOverview.run()
-        #self.amq.send_package("blue_side_overview", room_overview["blue"])
-        #self.amq.send_package("yellow_side_overview", room_overview["yellow"])
+        self.amq.send_package("blue_side_overview", room_overview["blue"])
+        self.amq.send_package("yellow_side_overview", room_overview["yellow"])
 
-        #updates = RecentChanges.run()
-        #self.amq.send_package("recent_changes", updates)
+        updates = RecentChanges.run()
+        self.amq.send_package("recent_changes", updates)
 
-        #graph = coordinator_line_graphs.run()
-        #self.amq.send_package("coordinator_line_graph", graph)
+        graph = coordinator_line_graphs.run()
+        self.amq.send_package("coordinator_line_graph", graph)
 
-        #smile = smile_status.run()
-        #self.amq.send_package("smile_face_blue", smile["blue"])
-        #self.amq.send_package("smile_face_yellow", smile["yellow"])
+        smile = smile_status.run()
+        self.amq.send_package("smile_face_blue", smile["blue"])
+        self.amq.send_package("smile_face_yellow", smile["yellow"])
 
 
 def run():
