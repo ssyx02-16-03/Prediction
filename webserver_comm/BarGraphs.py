@@ -174,13 +174,14 @@ class BarGroup:
             if has_priority:  # if the patient has not been triaged, it has no doctor status
                 is_klar = False
                 for event in patient["Events"]:
-                    if event["Title"] == "Klar":
+                    if event["Title"].encode('utf-8') == "Klar":
                         self.klar += 1
                         is_klar = True
 
                 if not is_klar:  # if the patient is finished, it has no doctor status
-                    if patient["TimeToDoctor"] != -1:  #
-                        self.has_doctor += 1
+                    for event in patient["Events"]:
+                        if event["Title"].encode('utf-8') == "Läkare":
+                            self.has_doctor += 1
 
     def get_json(self):
         if self.has_rooms_status:  # this will be the return for medicineBlue and medicineYellow
