@@ -89,7 +89,7 @@ def make_patient_json(patient, side):
     time_of_day = hour_of_day + ":" + minute_of_day
 
     return {
-        "room": get_proper_room_name(patient["Location"]),
+        "room": patient["Location"],
         "id": id,
         "side": side,
         "name": fake_name,
