@@ -1,6 +1,9 @@
 # coding=utf-8
 from elastic_api.CurrentFieldsLoader import CurrentFieldsLoader
 
+null_rooms = ["noRoom", ""]
+waiting_rooms =["ivr", "iv", "vr", "bvr", "gvr", "giv", "biv"]
+ignored_rooms = null_rooms + waiting_rooms
 
 def run():
     """
@@ -24,9 +27,11 @@ def run():
     for occupied_room in occupied_rooms:
         found = False
         for room in rooms:
+            occupied_room_name = occupied_room.encode('utf-8').lower()
+            if contains(ignored_rooms, occupied_room_name):  # if rooms is in list of ignored rooms, continue
+                continue
             for name in room.names:
-                occupied_room_name = occupied_room.encode('utf-8').lower()
-                if occupied_room_name == name:  # flatten to lower case because json extractor uppercase them
+                if occupied_room_name == name.encode('utf-8').lower():  # flatten to lower case because json extractor uppercase them
                     room.occupants += 1
                     room.patient_department = get_patient_department(occupied_room_name)
                     found = True  # set found to true because it is not a weird_room
@@ -140,10 +145,6 @@ class Rooms:
     """
     def __init__(self):
         self.rooms = [
-            Room(["noRoom", ""], "nowhere"),
-
-            Room(["ivr", "iv", "vr", "bvr", "gvr", "giv", "biv"], "waiting"),
-
             Room(["1", "i1", "in1", "if1", "gi1", "bi1"], "infection"),
             Room(["2", "i2", "in2", "if2", "gi2", "bi2"], "infection"),
             Room(["3", "i3", "in3", "if3", "gi3", "bi3"], "infection"),
@@ -232,3 +233,14 @@ def get_proper_room_name(my_name):
     except UnicodeEncodeError:
         return "error"
     return my_name  # no match found; my_name is weird room
+
+
+def contains(room_list, my_room):
+    """
+    checks if my_room is in room_list
+    __contains__() did not work as intended for some reason
+    """
+    for room in room_list:
+        if room.decode('utf-8').lower() == my_room.decode('utf-8').lower():
+            return True
+    return False
