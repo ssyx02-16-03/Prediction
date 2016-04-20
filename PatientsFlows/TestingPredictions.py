@@ -132,7 +132,7 @@ mpl.fit(X, y)
 poly.fit(X, y)
 mpl_pred = mpl.predict(X_t)
 poly_pred = poly.predict(X_t)
-'''
+
 mpl_pred = cross_val_predict(mpl, X, y, cv=10)
 poly_pred = cross_val_predict(poly, X, y, cv=10)
 #nn_pred = cross_val_predict(model, X, y, cv=10)
@@ -157,7 +157,7 @@ plt.plot(X_plot, y2_p, c='purple')
 plt.plot(X_plot, y3_p, c='orange')
 
 plt.show()
-
+'''
 '''
 gp.fit(X, y)
 y_pred = gp.predict(X)
