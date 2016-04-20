@@ -4,7 +4,7 @@ data.txt
 .idea/
 *.iml
 *.json
-*.pkl
+*.pkl*
 **/amq_config.py
 
 # Byte-compiled / optimized / DLL files
