@@ -10,7 +10,7 @@ blue_rooms = ["19", "20", "21", "22", "23", "24", "25", "26", "27",
 yellow_rooms = ["10", "11", "12", "13", "14", "15", "16", "17", "18",
                 "g10", "g11", "g12", "g13", "g14", "g15", "g16", "g17", "g18"]
 
-waiting_room_names = ["ivr", "iv", "vr", "bvr", "gvr", "g", "b", "giv", "biv"]
+waiting_room_names = ["ivr", "iv", "vr", "bvr", "gvr", "giv", "biv"]
 
 
 def run():

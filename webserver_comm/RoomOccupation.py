@@ -142,7 +142,7 @@ class Rooms:
         self.rooms = [
             Room(["noRoom", ""], "nowhere"),
 
-            Room(["ivr", "iv", "vr", "bvr", "gvr", "g", "b", "giv", "biv"], "waiting"),
+            Room(["ivr", "iv", "vr", "bvr", "gvr", "giv", "biv"], "waiting"),
 
             Room(["1", "i1", "in1", "if1", "gi1", "bi1"], "infection"),
             Room(["2", "i2", "in2", "if2", "gi2", "bi2"], "infection"),

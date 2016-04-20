@@ -13,7 +13,7 @@ blue_rooms = ["19", "20", "21", "22", "23", "24", "25", "26", "27",
 yellow_rooms = ["10", "11", "12", "13", "14", "15", "16", "17", "18",
                 "g10", "g11", "g12", "g13", "g14", "g15", "g16", "g17", "g18"]
 
-waiting_rooms = ["ivr", "iv", "vr", "bvr", "gvr", "g", "b", "giv", "biv"]
+waiting_rooms = ["ivr", "iv", "vr", "bvr", "gvr", "giv", "biv"]
 
 # if time since last event is larger than this, "guideline_exceeded" will be True in the output json
 guideline_time_limit_minutes = 75
