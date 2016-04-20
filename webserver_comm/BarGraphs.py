@@ -37,9 +37,12 @@ def run():
     # surgery and orthoped patients are very straightforward
     surgery_patients = elastic.get_patients_of_team("NAKKI")
     orthoped_patients = elastic.get_patients_of_team("NAKOR")
-
+    orthoped_patients = elastic.get_patients_of_team("NAKOR")
+    nakm_patients = elastic.get_patients_of_team("NAKM")
     # onh/gyn/barn
     onh_gyn_barn_patients = elastic.get_patients_of_team(u"NAKÖN") + elastic.get_patients_of_team("NAKBA")
+
+
 
     all_patients = elastic.get_all_patients()
 
@@ -66,8 +69,8 @@ def run():
     onhGynBarn.make_bars(onh_gyn_barn_patients)
 
     # all patients that do not belong to any of NAKME, NAKKI, NAKOR, NAKÖN, NAKBA
-    other_department = BarGroup("Annan avdelning")
-    other_department.make_bars(get_other_department_patients(all_patients))
+    nakm_department = BarGroup("NAKM")
+    nakm_department.make_bars(nakm_patients)
 
     return {"bars":[
         get_untriaged(all_patients).get_json(),
@@ -77,7 +80,7 @@ def run():
         surgery.get_json(),
         orthoped.get_json(),
         onhGynBarn.get_json(),
-        other_department.get_json()
+        nakm_department.get_json()
     ]}
 
 
@@ -177,11 +180,13 @@ class BarGroup:
                     if event["Title"].encode('utf-8') == "Klar":
                         self.klar += 1
                         is_klar = True
+                        break
 
                 if not is_klar:  # if the patient is finished, it has no doctor status
                     for event in patient["Events"]:
                         if event["Title"].encode('utf-8') == "Läkare":
                             self.has_doctor += 1
+                            break
 
     def get_json(self):
         if self.has_rooms_status:  # this will be the return for medicineBlue and medicineYellow
