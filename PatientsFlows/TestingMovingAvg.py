@@ -5,7 +5,7 @@ from elastic_api import parse_date
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 ONE_MINUTE_MILLIS = 60000
 
-c
+
 def filter_zeroes(times):
     """
     given a two column matrix, it filters out all lines in the matrix where both values are the same
