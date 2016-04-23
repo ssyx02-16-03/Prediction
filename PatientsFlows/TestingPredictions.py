@@ -79,11 +79,8 @@ end_time_min = (parse_date.date_to_millis(end_time)-parse_date.date_to_millis(st
 
 ttt = TimeToEventLoader(start_time, end_time, 0)
 ttt.set_search_triage()
-
 X1, y1 = run(ttt)
 X_plot = np.linspace(0, end_time_min, 5*24*60)[:, np.newaxis]
-
-
 X2, y2, y3 = get_speeds(ttt)
 
 '''
@@ -116,13 +113,13 @@ model.fit(X5, y5)
 y5_p = model.predict(X_plot)
 '''
 
-y6_p = shift(y1_p, 30, cval=0)
-y7_p = shift(y1_p, 15, cval=0)
+y6_p = shift(y1_p, -30, cval=0)
+y7_p = shift(y1_p, -15, cval=0)
 X = np.column_stack([X_plot, y1_p, y2_p, y3_p, y6_p, y7_p])
-y = shift(y1_p, -30, cval=0)
+y = shift(y1_p, 30, cval=0)
 
-poly = make_pipeline(PolynomialFeatures(3), Ridge())
-mpl = MLPRegressor()
+#poly = make_pipeline(PolynomialFeatures(3), Ridge())
+mpl = MLPRegressor(beta_1=0.99)
 '''
 y_t = y[-1000:-2]
 y = y[0:-1000]
@@ -132,32 +129,36 @@ mpl.fit(X, y)
 poly.fit(X, y)
 mpl_pred = mpl.predict(X_t)
 poly_pred = poly.predict(X_t)
-
-mpl_pred = cross_val_predict(mpl, X, y, cv=10)
-poly_pred = cross_val_predict(poly, X, y, cv=10)
-#nn_pred = cross_val_predict(model, X, y, cv=10)
-
-
-fig, ax = plt.subplots()
-ax.scatter(y, mpl_pred, c='b', marker='x')
-ax.scatter(y, poly_pred, c='y', marker ='+')
-#ax.scatter(y, nn_pred, c='r')
-ax.plot([y.min(), y.max()], [y.min(), y.max()], 'k--', lw=4)
-ax.set_xlabel('Measured')
-ax.set_ylabel('Predicted')
-plt.show()
-
-X = X_plot
-plt.plot(X, y, c='blue')
-plt.plot(X, mpl_pred, c='red')
-plt.plot(X, poly_pred, c='cyan')
-#plt.plot(X, nn_pred, c='green')
-plt.plot(X_plot, y1_p, c='green')
-plt.plot(X_plot, y2_p, c='purple')
-plt.plot(X_plot, y3_p, c='orange')
-
-plt.show()
 '''
+mpl_pred = cross_val_predict(mpl, X, y, cv=10)
+#poly_pred = cross_val_predict(poly, X, y, cv=10)
+#nn_pred = cross_val_predict(model, X, y, cv=10)
+print mpl.get_params()
+
+def plot_cross():
+    fig, ax = plt.subplots()
+    ax.scatter(y, mpl_pred, c='b', marker='x')
+#    ax.scatter(y, poly_pred, c='y', marker ='+')
+    #ax.scatter(y, nn_pred, c='r')
+    ax.plot([y.min(), y.max()], [y.min(), y.max()], 'k--', lw=4)
+    ax.set_xlabel('Measured')
+    ax.set_ylabel('Predicted')
+    plt.show()
+
+#mpl_pred = shift(mpl_pred, 30, cval=0)
+#poly_pred = shift(poly_pred, 30, cval=0)
+
+def plot_time():
+    X = X_plot
+#    plt.plot(X, y6_p, c='blue')
+#    plt.plot(X, mpl_pred, c='red')
+#    plt.plot(X, poly_pred, c='cyan')
+    plt.plot(X_plot, y1_p, c='green')
+    plt.plot(X_plot, y2_p)
+    plt.plot(X_plot, y3_p)
+    plt.show()
+plot_time()
+
 '''
 gp.fit(X, y)
 y_pred = gp.predict(X)

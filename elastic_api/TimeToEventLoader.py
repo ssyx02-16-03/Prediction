@@ -73,6 +73,7 @@ class TimeToEventLoader(AbstractLoader):
 
         event_times = []
         arrivial_times = []
+        to_event_times = []
 
         hits = response["hits"]["hits"]  # dig up list of patients from response
         for patient in hits:
@@ -89,7 +90,8 @@ class TimeToEventLoader(AbstractLoader):
             if time_to_event != -1 and start_time <= event_time < end_time:
                 event_times.append(event_time)
                 arrivial_times.append(care_contact_registration_time)
-        return arrivial_times, event_times
+                to_event_times.append(time_to_event)
+        return arrivial_times, event_times, to_event_times
 
 
     def patients_present(self, start_time, end_time):
