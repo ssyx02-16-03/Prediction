@@ -69,3 +69,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#en pryl min vim skapar
+*.tmp

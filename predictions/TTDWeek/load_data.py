@@ -1,17 +1,20 @@
 # import sys
 # sys.path.append('/home/edvard/GitHub/Prediction')
 
-from WaitTimesPerPatient.TTT import TTT
+from WaitTimesPerPatient.TTD import TTD
 # from elastic_api.UntriagedLoader import UntriagedLoader
 # import time
 import numpy as np
 
-time1 = "2016-03-08 10:00"
-time2 = "2016-03-18 10:00"
+time1 = "2016-03-07 00:00"
+time2 = "2016-04-18 00:00"
 
-presentTTT = TTT(time1, time2)
-seat_times = presentTTT.get_seat_time()
-ttt = presentTTT.get_ttt()
+presentTTD = TTD(time1, time2)
+seat_times = presentTTD.get_seat_time()
+ttd = presentTTD.get_ttd()
+weekdays = presentTTD.get_weekdays()
+daytimes = presentTTD.get_daytimes()
+print daytimes
 
 # untriagedLoader = UntriagedLoader(time1, time2, 0) # interval unused
 # untriageds = np.array([])
@@ -21,4 +24,4 @@ ttt = presentTTT.get_ttt()
 
 # millitime = int(time.mktime(time.strptime(time2, "%Y-%m-%d %H:%M"))) * 1000
 
-np.savez('data', seat_times=seat_times, ttt=ttt)
+np.savez('data', seat_times=seat_times, weekdays=weekdays, daytimes=daytimes, ttd=ttd)

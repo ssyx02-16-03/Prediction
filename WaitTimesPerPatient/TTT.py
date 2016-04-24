@@ -5,7 +5,7 @@ import os
 import time
 import numpy as np
 
-class PresentTTT(object):
+class TTT(object):
 
     def __init__(self, time1, time2):
         """

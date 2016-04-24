@@ -1,11 +1,16 @@
+# import sys
+# sys.path.append('/home/edvard/GitHub/Prediction')
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 data = np.load('data.npz')
-untriageds = data['untriageds']
+# untriageds = data['untriageds']
+seat_times = data['seat_times']
 ttt = data['ttt']
 
-X = untriageds
+# X = untriageds
+X = seat_times
 y = ttt
 
 print X.shape
