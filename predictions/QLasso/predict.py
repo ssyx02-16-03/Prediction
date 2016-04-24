@@ -27,4 +27,4 @@ q_features = "hej hej paw dig min bror"  # TODO
 
 # lasso
 lasso = linear_model.Lasso(alpha=1.0)  # TODO decide nice alpha
-lasso.fit(q_features)
+lasso.fit(q_features, ttd)
