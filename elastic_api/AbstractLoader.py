@@ -13,12 +13,16 @@ class AbstractLoader(object):
 
     def __init__(self, start_time, end_time, interval_minutes):
         """
-        :param start_time: format: "2016-03-06 23:18"
+        :param start_time: format: "2016-03-06 23:18" eller epoch_milli int
         :param end_time: format:
         :param interval_minutes: i minuter = en int
         """
-        self.start_time = int(time.mktime(time.strptime(start_time, "%Y-%m-%d %H:%M"))) * 1000
-        self.end_time = int(time.mktime(time.strptime(end_time, "%Y-%m-%d %H:%M"))) * 1000
+        if isinstance(start_time, int) or isinstance(start_time, float):
+            self.start_time = start_time
+            self.end_time = end_time
+        else:
+            self.start_time = int(time.mktime(time.strptime(start_time, "%Y-%m-%d %H:%M"))) * 1000
+            self.end_time = int(time.mktime(time.strptime(end_time, "%Y-%m-%d %H:%M"))) * 1000
         self.interval = interval_minutes * 1000 * 60
 
         file_name = os.path.join(os.path.dirname(__file__), 'elasticIP.txt')
