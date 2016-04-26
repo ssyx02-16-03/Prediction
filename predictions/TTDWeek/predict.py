@@ -34,16 +34,19 @@ x1l = np.ones(N)
 x2l = np.linspace(0, 24, N)
 Xl = np.column_stack([x1l, x2l])  # shape (100, 2)
 
-xl = np.linspace(24, 24 * 8, N)  # till 1-dim
+xl = np.linspace(24 * 2, 24 * 7, N)  # cioe inte hela veckan
 
-knn = neighbors.KNeighborsRegressor(n_neighbors=30, weights='uniform')
+#knn = neighbors.KNeighborsRegressor(n_neighbors=30, weights='uniform')
+rnn = neighbors.RadiusNeighborsRegressor(radius=20.1)#, weights='distance')
 X.shape = (861,1)
 y.shape = (861,1)
 print X.shape, y.shape
-knn = knn.fit(X, y)
+#knn = knn.fit(X, y)
+rnn.fit(X,y)
 xl.shape = (N,1)
 print xl.shape
-y_ = knn.predict(xl)
+#y_ = knn.predict(xl)
+y_ = rnn.predict(xl)
 
 ax2 = fig.add_subplot(122)
 ax2.plot(xl, y_)
@@ -53,5 +56,5 @@ plt.show()
 # save the model
 # joblib.dump(knn, 'model.pkl')
 # pickle.dumps(knn)
-with open('model.pkl', 'w') as file:
-    cPickle.dump(knn, file)
+#with open('model.pkl', 'w') as file:
+#    cPickle.dump(knn, file)
