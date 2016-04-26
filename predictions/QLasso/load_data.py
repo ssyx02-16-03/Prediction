@@ -1,6 +1,7 @@
 import numpy as np
 from WaitTimesPerPatient.TTD import TTD
 from elastic_api.UntriagedLoader import UntriagedLoader
+from elastic_api.TimeToEventLoader import TimeToEventLoader
 import cPickle
 
 
@@ -18,9 +19,9 @@ def load_state_nbrs(times, loader):
         nbrs = np.append(nbrs, t_waiters_loader.load_value(timee, 0))
     return nbrs
 
-time1 = "2016-03-07 00:00"
+time1 = "2016-03-08 18:00"
 #time2 = "2016-03-14 00:00"
-time2 = "2016-03-08 00:00"
+time2 = "2016-03-08 22:00"
 
 ttdModel = TTD(time1, time2)
 seat_times = ttdModel.get_seat_time()  # for most loader-methods
@@ -30,9 +31,19 @@ print weektimes.shape
 ttd = ttdModel.get_ttd()
 
 # load deterministic timeofweek-variable using separate model
-with open('../TTDWeek/model', 'r') as file:
+with open('../TTDWeek/model.pkl', 'r') as file:
     deterministic_model = cPickle.load(file)
 det_times = deterministic_model.predict(weektimes)
+
+# load triage-frequency using TimeToEventLoader
+# 15-20 triages per hour... reasonable???
+interval = 60 * 1000 * 100 # to calculate the fequency in, 60 minutes
+t_frequency = np.array([])
+for timee in seat_times:
+    freqLoader = TimeToEventLoader(int(timee) - interval, int(timee), 0)
+    freqLoader.set_search_triage()
+    kalle, tttArr, polle = freqLoader.get_event_times()
+    t_frequency = np.append(t_frequency, len(tttArr))
 
 # load movingaverage-variable vector using separate model
 # TODO
@@ -55,6 +66,7 @@ np.savez(
         weektimes=weektimes,
         ttd=ttd,
         det_times=det_times,
+        t_frequency = t_frequency,
         t_waiters=t_waiters,
         d_waiters=d_waiters
         )
