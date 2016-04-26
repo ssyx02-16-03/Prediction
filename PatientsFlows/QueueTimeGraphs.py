@@ -20,7 +20,7 @@ class QueueTimeGraphs:
         self.event_time_matrix = both_times[np.argsort(both_times[:, 1])]
         self.wait_times = (self.event_time_matrix[:, 1] - self.event_time_matrix[:, 0]) / ONE_MINUTE_MILLIS
 
-        self.event_times = (self.event_time_matrix[:, 1] - self.loader.start_time) / ONE_MINUTE_MILLIS
+        self.event_times = self.event_time_matrix[:, 1]
 
         if len(self.wait_times) == 0:
             self.wait_times = [0]
