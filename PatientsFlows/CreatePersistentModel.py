@@ -26,9 +26,9 @@ def fit_and_save_model(model, X_, y_, name):
     model.fit(X_, y_)
     joblib.dump(model, name + '.pkl')
 
-def save_data(X, y):
-    joblib.dump(X, 'X.pkl')
-    joblib.dump(y, 'y.pkl')
+def save_data(X, y, min_shift):
+    joblib.dump(X, str(min_shift) + 'X.pkl')
+    joblib.dump(y, str(min_shift) + 'y.pkl')
 
 start_time = "2016-03-25 12:00"
 end_time = "2016-03-30 12:00"
@@ -58,6 +58,7 @@ def create_model(min_shift):
     X5 = wait_loader.get_times()[:, np.newaxis]
     X5 = (X5/60000-start_time_min)
 
+    print 'All data picked up, transforming it to uniform axes'
     model = neighbors.KNeighborsRegressor(5, weights='distance')
     y1_p = get_uniform_axes(tri, wait, model)
     y2_p = get_uniform_axes(arr, speed_arr, model)
@@ -69,10 +70,14 @@ def create_model(min_shift):
 
     X = np.column_stack([y1_p, y2_p, y3_p, y4_p, y5_p, y6_p, y7_p])
     y = shift(y1_p, -min_shift, cval=0)
-    save_data(X, y)
+    save_data(X, y, min_shift)
+
     poly = make_pipeline(PolynomialFeatures(3), Ridge())
-    fit_and_save_model(poly, X, y, 'poly' + str(min_shift))
+    fit_and_save_model(poly, X, y, str(min_shift) + 'poly')
     mpl = MLPRegressor()
-    fit_and_save_model(mpl, X, y, 'mpl' + str(min_shift))
+    fit_and_save_model(mpl, X, y, str(min_shift) + 'mpl')
 
 create_model(30)
+create_model(20)
+create_model(10)
+create_model(0)
