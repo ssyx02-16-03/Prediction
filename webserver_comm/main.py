@@ -43,13 +43,13 @@ class Main:
         self.amq.send_package("recent_changes", updates)
 
         queue_status = QueueStatus()
+
         graph = queue_status.get_line_graph_data()
-        print graph
         self.amq.send_package("coordinator_line_graph", graph)
 
-#        smiles_blue, smile_yellow = graph.get_smile_data()
- #       self.amq.send_package("smile_face_blue", smiles_blue)
- #       self.amq.send_package("smile_face_yellow", smile_yellow)
+        smiles_blue, smile_yellow = queue_status.get_smile_data()
+        self.amq.send_package("smile_face_blue", smiles_blue)
+        self.amq.send_package("smile_face_yellow", smile_yellow)
 
 
 def run():

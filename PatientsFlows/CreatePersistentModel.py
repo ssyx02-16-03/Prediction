@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.ndimage.interpolation import shift
 
-from PatientsFlows import RealTimeWait
+import RealTimeWait
 from elastic_api import parse_date
 from elastic_api.AverageTimeWaitedLoader import AverageTimeWaitedLoader
 from sklearn import neighbors

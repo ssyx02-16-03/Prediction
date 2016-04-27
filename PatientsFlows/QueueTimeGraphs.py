@@ -24,7 +24,6 @@ class QueueTimeGraphs:
 
         if len(self.wait_times) == 0:
             self.wait_times = [0]
-        #TODO handle empty input
 
     def moving_average(self):
         PERCENT_NEW = 0.1

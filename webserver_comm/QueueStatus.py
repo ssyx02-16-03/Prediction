@@ -163,11 +163,23 @@ class QueueStatus:
         }
 
     def get_smile_data(self):
-        return 0, 0
+        blue = {
+            "value": 14000000000000,
+            "trend": self._make_smile_arrow([0]),
+            "mood": self._make_smile_happiness(0, [0, 0])
+        }
+        yellow = {
+            "value": 1400000000000,
+            "trend": self._make_smile_arrow([0]),
+            "mood": self._make_smile_happiness(0, [0, 0])
+        }
+
+        return blue, yellow
+
 
     def _make_smile_arrow(self, vector):
-        return 0
+        return 1
 
     def _make_smile_happiness(self, value, bounds):
-        return 0
+        return -1
 
