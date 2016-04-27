@@ -75,9 +75,11 @@ def create_model(max_shift, type):
     for i in range(0, max_shift + 1, 10):
         print i
         y = (shift(y1, -i, cval=0))
-        save_data(X, y, i, type)
+        #save_data(X, y, i, type)
         ys.append(y)
         fit_and_save_model(mpl, X, y, i, 'mpl', type)
 
 
-create_model(30, 'TimeToDoctor')
+create_model(60, 'TimeToTriage')
+create_model(60, 'TimeToDoctor')
+create_model(60, 'TotalTime')

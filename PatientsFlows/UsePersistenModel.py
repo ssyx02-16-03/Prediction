@@ -89,7 +89,7 @@ def testing():
     start_time = int(time.mktime(time.strptime("2016-04-25 16:30", "%Y-%m-%d %H:%M"))) * 1000
     end_time = int(time.mktime(time.strptime("2016-04-26 20:07", "%Y-%m-%d %H:%M"))) * 1000
 
-    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TotalTime')
+    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TimeToDoctor')
 
     print pred, X_pred
 
