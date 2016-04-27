@@ -7,8 +7,9 @@ from elastic_api.TimeToEventLoader import TimeToEventLoader
 import numpy as np
 ONE_HOUR_MILLISECONDS = 60 * 60 * 1000
 
+
 class QueueStatus:
-    def __init(self):
+    def __init__(self):
         now = int(time.time()) * 1000
 
         loader_start_time = now - ONE_HOUR_MILLISECONDS * 24
@@ -52,7 +53,7 @@ class QueueStatus:
         }
 
 
-    def get_vectors(loader, start_time, end_time):  # TODO add prediction part
+    def get_vectors(self, loader, start_time, end_time):  # TODO add prediction part
         queue_time_graphs = QueueTimeGraphs(loader)
         x_axis, y_axis = queue_time_graphs.moving_average()
 
