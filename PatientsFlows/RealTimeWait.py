@@ -30,9 +30,6 @@ def moving_average(loader):
     percent_new = 0.1
     percent_old = 1-percent_new
 
-def run(loader):
-
-
     times = loader.get_event_times()
     times = filter_zeroes(times) # filter out all zero event times. (patient was never even in the queue)
     both_times = np.column_stack(times)

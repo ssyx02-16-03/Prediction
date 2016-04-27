@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib as plt
 from scipy.integrate import simps
 
+
 from sklearn import linear_model, neighbors
 from sklearn.gaussian_process import GaussianProcess
 from sklearn.linear_model import Ridge

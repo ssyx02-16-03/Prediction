@@ -5,6 +5,7 @@ from PatientsFlows.QueueTimeGraphs import QueueTimeGraphs
 from elastic_api.TimeToEventConditionalLoader import TimeToEventConditionalLoader
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 import numpy as np
+import PatientsFlows.UsePersistenModel as UsePersistentModel
 ONE_HOUR_MILLISECONDS = 60 * 60 * 1000
 
 
@@ -24,13 +25,9 @@ class QueueStatus:
 
         # actual line data
         loader.set_search_triage()
-        self.ttt = self.get_vectors(loader, graph_start_time, graph_end_time)
-
-        loader.set_search_doctor()
-        self.ttd = self.get_vectors(loader, graph_start_time, graph_end_time)
-
-        loader.set_search_removed()
-        self.ttk = self.get_vectors(loader, graph_start_time, graph_end_time)
+        self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time)
+        self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y = [0], [0], [0], [0]
+        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = [0], [0], [0], [0]
 
         # data points for the circles
         matched_loader = TimeToEventConditionalLoader("0001-01-01 00:00", "0001-01-01 00:00", 0)
@@ -45,11 +42,19 @@ class QueueStatus:
 
     def get_line_graph_data(self):
         return {
-            "ttt": self.jsonize_ttt(self.ttt),
-            "ttd": self.jsonize_ttd_ttk(v=self.ttd, blue=self.ttd_blue_med, yellow=self.ttd_yellow_med,
-                                   surgery=self.ttd_surgery, orthopedia=self.ttd_ort, jour=self.ttd_jour),
-            "ttk": self.jsonize_ttd_ttk(v=self.ttk, blue=self.ttk_blue_med, yellow=self.ttk_yellow_med,
-                                   surgery=self.ttk_surgery, orthopedia=self.ttk_ort, jour=self.ttk_jour)
+            "ttt": self.jsonize_ttt(self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y),
+            "ttd": self.jsonize_ttd_ttk(self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y,
+                                    blue=self.ttd_blue_med,
+                                    yellow=self.ttd_yellow_med,
+                                    surgery=self.ttd_surgery,
+                                    orthopedia=self.ttd_ort,
+                                    jour=self.ttd_jour),
+            "ttk": self.jsonize_ttd_ttk(self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y,
+                                    blue=self.ttk_blue_med,
+                                    yellow=self.ttk_yellow_med,
+                                    surgery=self.ttk_surgery,
+                                    orthopedia=self.ttk_ort,
+                                    jour=self.ttk_jour)
         }
 
     def get_vectors(self, loader, start_time, end_time):  # TODO add prediction part
@@ -89,11 +94,27 @@ class QueueStatus:
             "prediction": prediction
         }
 
-    def jsonize_ttt(self, v):
+
+    def jsonize_ttt(self, ttv_x, ttv_y,ttv_pred_x, ttv_pred_y ):
+        trend = []
+        prediction = []
+
+        for i in range(0, len(ttv_x)):
+            trend.append({
+                "x": ttv_x[i][0],
+                "y": ttv_y[i]
+            })
+
+        for i in range(0, len(ttv_pred_x)):
+            prediction.append({
+                "x": ttv_pred_x[i],
+                "y": ttv_pred_y[i]
+            })
+
         return {
-            "trend": v["trend"],
-            "prediction": v["prediction"],
-            "current_value": v["prediction"][0]
+            "trend": trend,
+            "prediction": prediction,
+            "current_value": prediction[0]
         }
 
 
@@ -108,13 +129,29 @@ class QueueStatus:
         ttd = self.get_vectors(loader, start_time, end_time)["trend"]
         return ttk, ttd
 
-    def jsonize_ttd_ttk(self, v, blue, yellow, surgery, orthopedia, jour):
+    def jsonize_ttd_ttk(self, ttv_x, ttv_y, ttv_pred_x, ttv_pred_y, blue, yellow, surgery, orthopedia, jour):
+        trend = []
+        prediction = []
+
+        for i in range(0, len(ttv_x)):
+            trend.append({
+                "x": ttv_x[i],
+                "y": ttv_y[i]
+            })
+
+        for i in range(0, len(ttv_pred_x)):
+            prediction.append({
+                "x": ttv_pred_x[i],
+                "y": ttv_pred_y[i]
+            })
+
         list = [blue, yellow, surgery, orthopedia, jour]
         list.sort()
         median = list[2]
+
         return {
-            "trend": v["trend"],
-            "prediction": v["prediction"],
+            "trend": trend,
+            "prediction": prediction,
             "times": {
                 "Blue": blue,
                 "Gul": yellow,

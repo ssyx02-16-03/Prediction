@@ -24,7 +24,7 @@ colors = ['blue', 'red', 'green', 'purple', 'yellow']
 
 num_models = 7
 # start_time and end_time should be in epoch millis
-def predict_now(start_time, end_time, interval):
+def predict_now(start_time, end_time):
 
     start_time_min = start_time/60000
     end_time_min = (end_time-start_time)/60000
