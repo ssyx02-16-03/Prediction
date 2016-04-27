@@ -26,8 +26,8 @@ class QueueStatus:
         # actual line data
         loader.set_search_triage()
         self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
-        self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
-        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
+        self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToDoctor")
+        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TotalTime")
 
         # data points for the circles
         matched_loader = TimeToEventConditionalLoader("0001-01-01 00:00", "0001-01-01 00:00", 0)
@@ -49,7 +49,7 @@ class QueueStatus:
                                     surgery=self.ttd_surgery,
                                     orthopedia=self.ttd_ort,
                                     jour=self.ttd_jour),
-            "ttk": self.jsonize_ttd_ttk(self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y,
+            "ttk": self.jsonize_ttd_ttk(self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y,
                                     blue=self.ttk_blue_med,
                                     yellow=self.ttk_yellow_med,
                                     surgery=self.ttk_surgery,
@@ -161,25 +161,3 @@ class QueueStatus:
                 "median": median
             }
         }
-
-    def get_smile_data(self):
-        blue = {
-            "value": 14000000000000,
-            "trend": self._make_smile_arrow([0]),
-            "mood": self._make_smile_happiness(0, [0, 0])
-        }
-        yellow = {
-            "value": 1400000000000,
-            "trend": self._make_smile_arrow([0]),
-            "mood": self._make_smile_happiness(0, [0, 0])
-        }
-
-        return blue, yellow
-
-
-    def _make_smile_arrow(self, vector):
-        return 1
-
-    def _make_smile_happiness(self, value, bounds):
-        return -1
-

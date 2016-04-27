@@ -4,8 +4,9 @@ import RoomOccupation
 import BarGraphs
 import RoomOverview
 from webserver_comm import RecentChanges
-import smile_status
+from SmileStatus import SmileStatus
 from webserver_comm.QueueStatus import QueueStatus
+from webserver_comm.SmileStatus import SmileStatus
 
 FRAME_TIME_INTERVAL = 1  # seconds
 ONE_HOUR_MILLISECS = 60*60*1000
@@ -43,11 +44,12 @@ class Main:
         self.amq.send_package("recent_changes", updates)
 
         queue_status = QueueStatus()
-
         graph = queue_status.get_line_graph_data()
         self.amq.send_package("coordinator_line_graph", graph)
 
-        smiles_blue, smile_yellow = queue_status.get_smile_data()
+        smile_status = SmileStatus()
+        smiles_blue, smile_yellow = smile_status.get_smile_data()
+        print smiles_blue
         self.amq.send_package("smile_face_blue", smiles_blue)
         self.amq.send_package("smile_face_yellow", smile_yellow)
 

@@ -35,7 +35,10 @@ class UntriagedLoader(AbstractLoader):
         hits = response["hits"]["hits"]  # dig up list of patients from response
         count = 0
         for patient in hits:
-            time_to_event = patient["fields"][self.event_name][0]
+            try:
+                time_to_event = patient["fields"][self.event_name][0]
+            except KeyError:
+                time_to_event = -1  # this will trigger when looking for "TotalTime"
             care_contact_registration_time = parse_date.date_to_millis(patient["fields"]["CareContactRegistrationTime"][0])
             event_time = care_contact_registration_time + time_to_event
 
