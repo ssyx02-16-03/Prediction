@@ -102,7 +102,7 @@ def rolling_average(loader, sweep_length, sweep_interval):
 
 
 # initialize the loader
-start_time = "2016-03-27 08:00"
+start_time = "2016-03-30 08:00"
 end_time = "2016-03-31 08:00"
 interval = 60
 start_time_min = parse_date.date_to_millis(start_time) / ONE_MINUTE_MILLIS

@@ -3,18 +3,13 @@ import matplotlib.pyplot as plt
 from scipy.ndimage.interpolation import shift
 
 from elastic_api import parse_date
-from elastic_api.AverageTimeWaitedLoader import AverageTimeWaitedLoader
 from sklearn import neighbors
-from sklearn.cross_validation import cross_val_predict, cross_val_score
-from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.neural_network import MLPRegressor
 
 from elastic_api.TimeToEventLoader import TimeToEventLoader
-from elastic_api.UntriagedLoader import UntriagedLoader
-
 percent_new = 0.1
 percent_old = 1-percent_new
 
@@ -23,9 +18,9 @@ def run(loader):
     times = loader.get_event_times()
     both_times = np.column_stack(times)
     both_times = both_times[np.argsort(both_times[:,1])]
-    arr_times = both_times[:,0]
-    event_times = both_times[:,1]
-    wait_times = (both_times[:,1]-both_times[:,0])/60000
+    arr_times = both_times[:, 0]
+    event_times = both_times[:, 1]
+    wait_times = (both_times[:, 1]-both_times[:, 0])/60000
     arr_times = np.asanyarray(arr_times)[:, np.newaxis]
     event_times = np.asanyarray(event_times)[:, np.newaxis]
 
@@ -45,9 +40,9 @@ def get_speeds(loader):
 
     times = loader.get_event_times()
     both_times = np.column_stack(times)
-    both_times = both_times[np.argsort(both_times[:,1])]
-    arr_times = both_times[:,0]
-    event_times = both_times[:,1]
+    both_times = both_times[np.argsort(both_times[:, 1])]
+    arr_times = both_times[:, 0]
+    event_times = both_times[:, 1]
 
     arr_times = arr_times[np.argsort(arr_times)]
     arrivial_speeds=[]
