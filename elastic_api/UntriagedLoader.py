@@ -13,6 +13,12 @@ class UntriagedLoader(AbstractLoader):
     def set_search_doctor(self):
         self.event_name = "TimeToDoctor"
 
+    def set_event_name(self, name):
+        """
+        more convenient way of setting the event type to search for
+        """
+        self.event_name = name
+
     def load_value(self, time_point, interval_unused):
         """
         This simply counts how many patients were waiting for triage or doctor at a given time.

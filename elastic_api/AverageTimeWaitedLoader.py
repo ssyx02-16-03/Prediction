@@ -12,6 +12,12 @@ class AverageTimeWaitedLoader(AbstractLoader):
     def set_search_removed(self):
         self.event_name = "TotalTime"
 
+    def set_event_name(self, name):
+        """
+        more convenient way of setting the event type to search for
+        """
+        self.event_name = name
+
     def load_value(self, time_point, interval_unused):
         """
         This finds every patient in queue at a given time and then calculates how long they have been waiting, on

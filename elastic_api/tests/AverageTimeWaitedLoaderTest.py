@@ -7,7 +7,7 @@ interval = 5
 turbo = AverageTimeWaitedLoader(start_time, end_time, interval)
 
 # this calculates the average time the patients have been waiting for triage, if they are waiting for triage
-turbo.set_search_triage()
+turbo.set_event_name("TimeToTriage")
 
 # this calculates the average time the patients have been waiting for a doctor, if they are waiting for a doctor
 # turbo.set_search_doctor()

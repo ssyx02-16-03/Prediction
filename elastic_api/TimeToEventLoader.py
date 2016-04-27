@@ -13,6 +13,12 @@ class TimeToEventLoader(AbstractLoader):
     def set_search_removed(self):
         self.event_name = "TotalTime"
 
+    def set_event_name(self, name):
+        """
+        more convenient way of setting the event type to search for
+        """
+        self.event_name = name
+
     def load_value(self, start_time, interval_millisecs):
         """
         Returns a list of values for TTT, TTD or TTK from a given interval. One time value is added to the list for each

@@ -15,6 +15,12 @@ class TimeToEventConditionalLoader(AbstractLoader):
     def set_search_removed(self):
         self.event_name = "TotalTime"
 
+    def set_event_name(self, name):
+        """
+        more convenient way of setting the event type to search for
+        """
+        self.event_name = name
+
     def set_torg(self, torg):
         self.torg = torg
 
