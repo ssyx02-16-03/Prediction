@@ -22,9 +22,11 @@ colors = ['blue', 'red', 'green', 'purple', 'yellow']
 #x6 = ttt för 30 min sen
 #x7 = ttt för 15 min sen
 
-num_models = 7
+num_models = 4
+model_place = '../SavedModels/'
+
 # start_time and end_time should be in epoch millis
-def predict_now(start_time, end_time):
+def predict_now(start_time, end_time, type):
 
     start_time_min = start_time/60000
     end_time_min = (end_time-start_time)/60000
@@ -33,11 +35,11 @@ def predict_now(start_time, end_time):
     models = []
     for i in range(0, num_models, 1):
         X_pred.append(end_time_min + i*10)
-        models.append(joblib.load(str(i*10) + 'mpl.pkl'))
+        models.append(joblib.load(model_place + str(i*10) + 'mpl' + type + '.pkl'))
 
     interval = 1
     ttt = TimeToEventLoader(start_time, end_time, interval)
-    ttt.set_search_triage()
+    ttt.set_event_name(type)
 
 
     arr, tri, wait, real = RealTimeWait.moving_average(ttt)
@@ -47,7 +49,7 @@ def predict_now(start_time, end_time):
     arr = arr/60000-start_time_min
     y2, y3 = RealTimeWait.get_speeds(ttt)
 
-    X_plot = np.linspace(0, end_time_min, 24*60)[:, np.newaxis]
+    X_plot = np.linspace(0, end_time_min, end_time_min + 1)[:, np.newaxis]
 
     model = neighbors.KNeighborsRegressor(5, weights='distance')
     model.fit(tri, wait)
@@ -85,13 +87,13 @@ def predict_now(start_time, end_time):
 
 def testing():
     start_time = int(time.mktime(time.strptime("2016-04-25 16:30", "%Y-%m-%d %H:%M"))) * 1000
-    end_time = int(time.mktime(time.strptime("2016-04-26 07:47", "%Y-%m-%d %H:%M"))) * 1000
-    interval = 1
+    end_time = int(time.mktime(time.strptime("2016-04-26 20:07", "%Y-%m-%d %H:%M"))) * 1000
 
-    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, interval)
+    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TotalTime')
 
     print pred, X_pred
 
     plt.plot(X_plot, hist, c='blue')
     plt.plot(X_pred, pred, c='yellow')
     plt.show()
+testing()
