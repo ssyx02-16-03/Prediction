@@ -12,7 +12,7 @@ from elastic_api.TimeToEventLoader import TimeToEventLoader
 
 percent_new = 0.1
 percent_old = 1-percent_new
-
+d
 def run(loader):
 
     times = loader.get_event_times()

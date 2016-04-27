@@ -52,7 +52,6 @@ class QueueStatus:
                                    surgery=self.ttk_surgery, orthopedia=self.ttk_ort, jour=self.ttk_jour)
         }
 
-
     def get_vectors(self, loader, start_time, end_time):  # TODO add prediction part
         queue_time_graphs = QueueTimeGraphs(loader)
         x_axis, y_axis = queue_time_graphs.moving_average()
@@ -90,7 +89,6 @@ class QueueStatus:
             "prediction": prediction
         }
 
-
     def jsonize_ttt(self, v):
         return {
             "trend": v["trend"],
@@ -110,7 +108,6 @@ class QueueStatus:
         ttd = self.get_vectors(loader, start_time, end_time)["trend"]
         return ttk, ttd
 
-
     def jsonize_ttd_ttk(self, v, blue, yellow, surgery, orthopedia, jour):
         list = [blue, yellow, surgery, orthopedia, jour]
         list.sort()
@@ -127,3 +124,13 @@ class QueueStatus:
                 "median": median
             }
         }
+
+    def get_smile_data(self):
+        return 0, 0
+
+    def _make_smile_arrow(self, vector):
+        return 0
+
+    def _make_smile_happiness(self, value, bounds):
+        return 0
+
