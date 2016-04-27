@@ -63,10 +63,10 @@ def predict_now(start_time, end_time, type):
     start_time = end_time - interval*1000*60
     print start_time, end_time
     untriage = UntriagedLoader(start_time, end_time, interval)
-    untriage.set_search_triage()
+    untriage.set_event_name(type)
     y4 = untriage.load_vector()
     wait_loader = AverageTimeWaitedLoader(start_time, end_time, interval)
-    wait_loader.set_search_triage()
+    wait_loader.set_event_name(type)
     y5 = wait_loader.load_vector()/60000
 
     x1 = wait[-1]
@@ -89,7 +89,7 @@ def testing():
     start_time = int(time.mktime(time.strptime("2016-04-25 16:30", "%Y-%m-%d %H:%M"))) * 1000
     end_time = int(time.mktime(time.strptime("2016-04-26 20:07", "%Y-%m-%d %H:%M"))) * 1000
 
-    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TimeToDoctor')
+    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TotalTime')
 
     print pred, X_pred
 

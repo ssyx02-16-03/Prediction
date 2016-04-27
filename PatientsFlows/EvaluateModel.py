@@ -17,8 +17,8 @@ num_models = 4
 Xs = []
 ys = []
 model_place = '../SavedModels/'
-#model_place = os.environ['PREDICTION_MODELS']
-type = 'TimeToDoctor'
+
+type = 'TimeToTriage'
 for i in range(0, num_models, 1):
     Xs.append(joblib.load(model_place + str(i * 10) + type + 'X.pkl'))
     ys.append(joblib.load(model_place + str(i * 10) + type + 'y.pkl'))
