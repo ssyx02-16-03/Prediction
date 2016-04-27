@@ -25,9 +25,9 @@ class QueueStatus:
 
         # actual line data
         loader.set_search_triage()
-        self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time)
-        self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y = [0], [0], [0], [0]
-        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = [0], [0], [0], [0]
+        self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
+        self.ttd_x, self.ttd_y, self.ttd_pred_x, self.ttd_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
+        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
 
         # data points for the circles
         matched_loader = TimeToEventConditionalLoader("0001-01-01 00:00", "0001-01-01 00:00", 0)
@@ -135,7 +135,7 @@ class QueueStatus:
 
         for i in range(0, len(ttv_x)):
             trend.append({
-                "x": ttv_x[i],
+                "x": ttv_x[i][0],
                 "y": ttv_y[i]
             })
 

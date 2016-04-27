@@ -1,6 +1,7 @@
 # coding=utf-8
 import time
 
+import config
 from PatientsFlows import RealTimeWait
 from elastic_api import parse_date
 from elastic_api.AverageTimeWaitedLoader import AverageTimeWaitedLoader
@@ -23,7 +24,7 @@ colors = ['blue', 'red', 'green', 'purple', 'yellow']
 #x7 = ttt för 15 min sen
 
 num_models = 4
-model_place = '../SavedModels/'
+model_place = config.saved_models_path  #  '../SavedModels/'
 
 # start_time and end_time should be in epoch millis
 def predict_now(start_time, end_time, type):
@@ -61,7 +62,7 @@ def predict_now(start_time, end_time, type):
     y3_p = model.predict(X_plot)
 
     start_time = end_time - interval*1000*60
-    print start_time, end_time
+    #print start_time, end_time
     untriage = UntriagedLoader(start_time, end_time, interval)
     untriage.set_event_name(type)
     y4 = untriage.load_vector()
@@ -78,10 +79,10 @@ def predict_now(start_time, end_time, type):
     x7 = y1_p[-16]
 
     X = np.column_stack([x1, x2, x3, x4, x5, x6, x7])
-    print X
+    #print X
     pred = []
     for i in range(0, num_models, 1):
-        print str(i*10)
+        #print str(i*10)
         pred.append(models[i].predict(X)[0])
     return tri, wait, X_pred, pred
 
@@ -91,7 +92,7 @@ def testing():
 
     X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TotalTime')
 
-    print pred, X_pred
+    #print pred, X_pred
 
     plt.plot(X_plot, hist, c='blue')
     plt.plot(X_pred, pred, c='yellow')

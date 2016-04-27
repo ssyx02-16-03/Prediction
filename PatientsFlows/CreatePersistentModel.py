@@ -2,6 +2,7 @@ import numpy as np
 from scipy.ndimage.interpolation import shift
 
 import RealTimeWait
+import config
 from elastic_api import parse_date
 from elastic_api.AverageTimeWaitedLoader import AverageTimeWaitedLoader
 from sklearn import neighbors
@@ -12,7 +13,7 @@ from elastic_api.TimeToEventLoader import TimeToEventLoader
 from elastic_api.UntriagedLoader import UntriagedLoader
 
 
-model_place = '../SavedModels/'
+model_place = config.saved_models_path#'../SavedModels/'
 start_time = "2016-04-11 12:00"
 end_time = "2016-04-21 12:00"
 interval = 10
