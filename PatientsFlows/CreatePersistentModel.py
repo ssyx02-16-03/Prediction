@@ -77,6 +77,9 @@ def create_model(min_shift):
     mpl = MLPRegressor()
     fit_and_save_model(mpl, X, y, str(min_shift) + 'mpl')
 
+create_model(60)
+create_model(50)
+create_model(40)
 create_model(30)
 create_model(20)
 create_model(10)

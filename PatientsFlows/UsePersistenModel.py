@@ -1,4 +1,6 @@
 # coding=utf-8
+import time
+
 from PatientsFlows import RealTimeWait
 from elastic_api import parse_date
 from elastic_api.AverageTimeWaitedLoader import AverageTimeWaitedLoader
@@ -20,14 +22,16 @@ colors = ['blue', 'red', 'green', 'purple', 'yellow']
 #x6 = ttt för 30 min sen
 #x7 = ttt för 15 min sen
 
-def predict_now(start_time, end_time):
+num_models = 7
+# start_time and end_time should be in epoch millis
+def predict_now(start_time, end_time, interval):
 
-    start_time_min = parse_date.date_to_millis(start_time)/60000-120
-    end_time_min = (parse_date.date_to_millis(end_time)-parse_date.date_to_millis(start_time))/60000
+    start_time_min = start_time/60000
+    end_time_min = (end_time-start_time)/60000
 
     X_pred = []
     models = []
-    for i in range(0, 4, 1):
+    for i in range(0, num_models, 1):
         X_pred.append(end_time_min + i*10)
         models.append(joblib.load(str(i*10) + 'mpl.pkl'))
 
@@ -54,8 +58,8 @@ def predict_now(start_time, end_time):
     model.fit(tri, y3)
     y3_p = model.predict(X_plot)
 
-    start_time=end_time[:-2] + str(int(end_time[-2:])-interval)
-    print start_time
+    start_time = end_time - interval*1000*60
+    print start_time, end_time
     untriage = UntriagedLoader(start_time, end_time, interval)
     untriage.set_search_triage()
     y4 = untriage.load_vector()
@@ -74,20 +78,20 @@ def predict_now(start_time, end_time):
     X = np.column_stack([x1, x2, x3, x4, x5, x6, x7])
     print X
     pred = []
-    for i in range(0, 4, 1):
+    for i in range(0, num_models, 1):
         print str(i*10)
         pred.append(models[i].predict(X)[0])
-    return X_plot, pred, y1_p, X_pred
+    return tri, wait, X_pred, pred
 
+def testing():
+    start_time = int(time.mktime(time.strptime("2016-04-25 16:30", "%Y-%m-%d %H:%M"))) * 1000
+    end_time = int(time.mktime(time.strptime("2016-04-26 07:47", "%Y-%m-%d %H:%M"))) * 1000
+    interval = 1
 
-start_time = "2016-04-25 13:30"
-end_time = "2016-04-26 13:30"
-interval = 1
+    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, interval)
 
-X_plot, pred, hist, X_pred = predict_now(start_time, end_time)
+    print pred, X_pred
 
-print pred, X_pred
-
-plt.plot(X_plot, hist, c='blue')
-plt.plot(X_pred, pred, c='yellow')
-plt.show()
+    plt.plot(X_plot, hist, c='blue')
+    plt.plot(X_pred, pred, c='yellow')
+    plt.show()
