@@ -45,9 +45,12 @@ def create_model(max_shift, type):
     arr, tri, wait, real = RealTimeWait.moving_average(ttt)
     tri = np.asarray(tri)
     tri = tri / 60000 - start_time_min
+
+    arr, tri2, speed_arr, speed_tri = RealTimeWait.get_speeds(ttt)
     arr = np.asarray(arr)
     arr = arr / 60000 - start_time_min
-    speed_arr, speed_tri = RealTimeWait.get_speeds(ttt)
+    tri2 = np.asarray(tri2)
+    tri2 = tri2 / 60000 - start_time_min
     untriage = UntriagedLoader(start_time, end_time, interval)
     untriage.set_event_name(type)
     y4 = untriage.load_vector()
@@ -64,7 +67,7 @@ def create_model(max_shift, type):
     model = neighbors.KNeighborsRegressor(5, weights='distance')
     y1 = get_uniform_axes(tri, wait, model)
     y2 = get_uniform_axes(arr, speed_arr, model)
-    y3 = get_uniform_axes(tri, speed_tri, model)
+    y3 = get_uniform_axes(tri2, speed_tri, model)
     y4 = get_uniform_axes(X4, y4, model)
     y5 = get_uniform_axes(X5, y5, model)
     y6 = shift(y1, 30, cval=0)

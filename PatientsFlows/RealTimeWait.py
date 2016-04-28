@@ -80,5 +80,7 @@ def get_speeds(loader):
         done_speeds.append(done_speed)
     arrivial_speeds = np.asarray(arrivial_speeds)
     done_speeds = np.asarray(done_speeds)
-    return arrivial_speeds/60000, done_speeds/60000
+    arr_times = np.asanyarray(arr_times)[:, np.newaxis]
+    event_times = np.asanyarray(event_times)[:, np.newaxis]
+    return arr_times, event_times, arrivial_speeds/60000, done_speeds/60000
 

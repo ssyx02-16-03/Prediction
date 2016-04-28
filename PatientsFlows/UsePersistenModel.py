@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 from sklearn.externals import joblib
+from predictions.Estimators.LWRegressor import LWRegressor
 
 colors = ['blue', 'red', 'green', 'purple', 'yellow']
 
@@ -46,9 +47,11 @@ def predict_now(start_time, end_time, type):
     arr, tri, wait, real = RealTimeWait.moving_average(ttt)
     tri = np.asarray(tri)
     tri = tri/60000-start_time_min
+    arr, tri2, y2, y3 = RealTimeWait.get_speeds(ttt)
     arr = np.asarray(arr)
     arr = arr/60000-start_time_min
-    y2, y3 = RealTimeWait.get_speeds(ttt)
+    tri2 = np.asarray(tri2)
+    tri2 = tri2/60000-start_time_min
 
     X_plot = np.linspace(0, end_time_min, end_time_min + 1)[:, np.newaxis]
 
@@ -58,7 +61,7 @@ def predict_now(start_time, end_time, type):
 
     model.fit(arr, y2)
     y2_p = model.predict(X_plot)
-    model.fit(tri, y3)
+    model.fit(tri2, y3)
     y3_p = model.predict(X_plot)
 
     start_time = end_time - interval*1000*60
@@ -92,9 +95,12 @@ def testing():
 
     X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TotalTime')
 
+    lwr = LWRegressor()
+    lwr.fit(X_plot, hist)
+    y = lwr.predict(X_plot)
     #print pred, X_pred
 
     plt.plot(X_plot, hist, c='blue')
     plt.plot(X_pred, pred, c='yellow')
     plt.show()
-#testing()
+testing()
