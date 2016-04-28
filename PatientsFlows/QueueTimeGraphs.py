@@ -11,7 +11,7 @@ class QueueTimeGraphs:
     def __init__(self, loader):
         self.loader = loader
 
-        times = loader.get_event_times()  # retrieve all events on the interval
+        times = loader.get_event_times()        # retrieve all events on the interval
         times = self._filter_zeroes(times)      # only analyse non-zero queue times
         # reformat to numpy column matrix and sort by timestamp
         both_times = np.column_stack(times)
@@ -106,7 +106,6 @@ class QueueTimeGraphs:
         return filtered_times
 
 def test():
-    # initialize the loader
     start_time = "2016-03-30 08:00"
     end_time = "2016-03-31 08:00"
     interval = 60

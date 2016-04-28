@@ -83,7 +83,7 @@ def create_model(max_shift, type):
         ys.append(y)
         fit_and_save_model(mpl, X, y, i, 'mpl', type)
 
-
+create_model(60, 'TimeToFinished')
 create_model(60, 'TimeToTriage')
 create_model(60, 'TimeToDoctor')
 create_model(60, 'TotalTime')

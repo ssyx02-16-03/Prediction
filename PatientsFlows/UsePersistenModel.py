@@ -25,7 +25,7 @@ colors = ['blue', 'red', 'green', 'purple', 'yellow']
 #x7 = ttt för 15 min sen
 
 num_models = 4
-model_place = config.saved_models_path  #  '../SavedModels/'
+model_place = config.saved_models_path
 
 # start_time and end_time should be in epoch millis
 def predict_now(start_time, end_time, type):
