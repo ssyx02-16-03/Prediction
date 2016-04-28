@@ -13,6 +13,8 @@ from elastic_api.TimeToEventLoader import TimeToEventLoader
 from elastic_api.UntriagedLoader import UntriagedLoader
 
 
+MODEL_PREDICTION_RANGE = 60  # how many minutes into the future the model should look
+
 model_place = config.saved_models_path#'../SavedModels/'
 start_time = "2016-04-11 12:00"
 end_time = "2016-04-21 12:00"
@@ -83,7 +85,7 @@ def create_model(max_shift, type):
         ys.append(y)
         fit_and_save_model(mpl, X, y, i, 'mpl', type)
 
-create_model(60, 'TimeToFinished')
-create_model(60, 'TimeToTriage')
-create_model(60, 'TimeToDoctor')
-create_model(60, 'TotalTime')
+create_model(MODEL_PREDICTION_RANGE, 'TimeToFinished')
+create_model(MODEL_PREDICTION_RANGE, 'TimeToTriage')
+create_model(MODEL_PREDICTION_RANGE, 'TimeToDoctor')
+create_model(MODEL_PREDICTION_RANGE, 'TotalTime')

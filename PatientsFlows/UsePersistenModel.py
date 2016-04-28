@@ -103,4 +103,4 @@ def testing():
     plt.plot(X_plot, hist, c='blue')
     plt.plot(X_pred, pred, c='yellow')
     plt.show()
-testing()
+# testing()

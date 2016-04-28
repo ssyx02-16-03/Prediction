@@ -8,13 +8,18 @@ import PatientsFlows.UsePersistenModel as UsePersistentModel
 ONE_HOUR_MILLISECONDS = 60 * 60 * 1000
 
 
+
 class QueueStatus:
+
     def __init__(self):
+        self.GRAPH_START_TIME = 10  # hours before now
+        self.GRAPH_END_TIME = 2
+
         now = int(time.time()) * 1000
 
         loader_start_time = now - ONE_HOUR_MILLISECONDS * 24
         loader_end_time = now
-        graph_start_time = now - ONE_HOUR_MILLISECONDS * 12
+        graph_start_time = now - ONE_HOUR_MILLISECONDS * self.GRAPH_START_TIME
         graph_end_time = now
 
         loader = TimeToEventLoader("0001-01-01 00:00", "0001-01-01 00:00", 0)
@@ -39,6 +44,10 @@ class QueueStatus:
 
     def get_line_graph_data(self):
         return {
+            "time_axis":{
+                "start": -self.GRAPH_START_TIME,
+                "end": self.GRAPH_END_TIME
+            },
             "ttt": self.jsonize_ttt(self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y),
             "ttk": self.jsonize_tvt_ttl_ttk(self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y,
                                         blue=self.ttk_blue_med,
