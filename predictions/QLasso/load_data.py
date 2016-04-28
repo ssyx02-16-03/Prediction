@@ -45,7 +45,7 @@ for timee in seat_times:
     kalle, tttArr, polle = freqLoader.get_event_times()
     t_frequency = np.append(t_frequency, len(tttArr))
 
-# load movingaverage-variable vector using separate model
+# load rollingaverage-variable vector using separate model
 # TODO
 
 # load vectors of state-variables at times weektimes()
