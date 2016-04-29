@@ -7,6 +7,8 @@ from elastic_api import parse_date
 import time
 num_lines = 3
 
+# if true, uncolored patients will be shown on the torg-views. if false, they will be ignored.
+SHOW_NEUTRAL_PATIENTS = False
 
 def run():
     medicine_patients = GeneralQuery().get_patients_of_team("NAKME")
@@ -23,8 +25,9 @@ def run():
         elif department == "medicineYellow":
             yellow_patients.append(patient)
         else:
-            yellow_patients.append(patient)
-            blue_patients.append(patient)
+            if SHOW_NEUTRAL_PATIENTS:
+                yellow_patients.append(patient)
+                blue_patients.append(patient)
 
     blue_events = get_recent_events(blue_patients)
     yellow_events = get_recent_events(yellow_patients)

@@ -18,6 +18,8 @@ waiting_rooms = ["ivr", "iv", "vr", "bvr", "gvr", "giv", "biv"]
 # if time since last event is larger than this, "guideline_exceeded" will be True in the output json
 guideline_time_limit_minutes = 75
 
+# if this is True, uncolored patients will show up on the blue torg-view. If false, thos patients are ignored
+SHOW_NEUTRAL_PATIENTS = False
 
 def run():
     """
@@ -40,7 +42,8 @@ def run():
         elif department == "medicineYellow":
             yellow_patients.append(patient)
         else:
-            sideless_patients.append(patient)
+            if SHOW_NEUTRAL_PATIENTS:
+                sideless_patients.append(patient)
 
     # we now have one blue list, one yellow list and one list of non-blue, non-yellow medicine patients
     blue_side_json = []
