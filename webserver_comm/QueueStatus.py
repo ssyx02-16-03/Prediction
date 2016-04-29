@@ -28,10 +28,10 @@ class QueueStatus:
         loader.start_time = loader_start_time
 
         # actual line data
-        self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToTriage")
-        self.ttl_x, self.ttl_y, self.ttl_pred_x, self.ttl_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToDoctor")
-        self.tvt_x, self.tvt_y, self.tvt_pred_x, self.tvt_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TotalTime")
-        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = UsePersistentModel.predict_now(loader_start_time, loader_end_time, "TimeToFinished")
+        self.ttt_x, self.ttt_y, self.ttt_pred_x, self.ttt_pred_y = self.safe_predict(loader_start_time, loader_end_time, "TimeToTriage")
+        self.ttl_x, self.ttl_y, self.ttl_pred_x, self.ttl_pred_y = self.safe_predict(loader_start_time, loader_end_time, "TimeToDoctor")
+        self.tvt_x, self.tvt_y, self.tvt_pred_x, self.tvt_pred_y = self.safe_predict(loader_start_time, loader_end_time, "TotalTime")
+        self.ttk_x, self.ttk_y, self.ttk_pred_x, self.ttk_pred_y = self.safe_predict(loader_start_time, loader_end_time, "TimeToFinished")
 
         # data points for the circles
         matched_loader = TimeToEventConditionalLoader(loader_start_time, loader_end_time, 0)
@@ -42,9 +42,17 @@ class QueueStatus:
         self.ttk_blue_med, self.ttl_blue_med, self.tvt_blue_med = self.get_points(matched_loader, "medicineBlue", ["NAKME"], graph_start_time, graph_end_time)
         self.ttk_yellow_med, self.ttl_yellow_med, self.tvt_yellow_med = self.get_points(matched_loader, "medicineYellow", ["NAKME"], graph_start_time, graph_end_time)
 
+    def safe_predict(self, start_time, end_time, nyckeltal):
+        try:
+            return UsePersistentModel.predict_now(start_time, end_time, nyckeltal)
+        except ValueError:
+            return [[0]], [[0]], [[0]], [[0]]  # return zero values to reduce crashyness of retutrn values
+        # return unset: if another error occurs, program will crash (by design)
+
+
     def get_line_graph_data(self):
         return {
-            "time_axis":{
+            "time_axis": {
                 "start": -self.GRAPH_START_TIME,
                 "end": self.GRAPH_END_TIME
             },
@@ -76,6 +84,13 @@ class QueueStatus:
 
         # find start and end indices
         length = len(x_axis)
+        """
+        if not x_axis:
+            return [{
+                "x": 0,
+                "y": 0
+            }]
+        """
         i = 0
         while i < length and x_axis[i] < start_time:
             i += 1
@@ -95,7 +110,7 @@ class QueueStatus:
 
         return trend
 
-    def jsonize_ttt(self, ttv_x, ttv_y,ttv_pred_x, ttv_pred_y ):
+    def jsonize_ttt(self, ttv_x, ttv_y, ttv_pred_x, ttv_pred_y ):
         trend = []
         prediction = []
 
@@ -122,13 +137,28 @@ class QueueStatus:
         loader.set_torg(torg)
 
         loader.set_event_name("TimeToFinished")
-        ttk = self.get_vector(loader, start_time, end_time)[-1]["y"]
+        res = self.get_vector(loader, start_time, end_time)
+        print res
+        if res:
+            ttk = res[-1]["y"]
+        else:
+            ttk = [0]
 
         loader.set_search_removed()
-        tvt = self.get_vector(loader, start_time, end_time)[-1]["y"]
+        res = self.get_vector(loader, start_time, end_time)
+        if res:
+            tvt = res[-1]["y"]
+        else:
+            tvt = [0]
 
         loader.set_search_doctor()
-        ttl = self.get_vector(loader, start_time, end_time)[-1]["y"]
+        res = self.get_vector(loader, start_time, end_time)
+        if res:
+            ttl = res[-1]["y"]
+        else:
+            ttl = [0]
+
+
         return ttk, ttl, tvt
 
     def jsonize_tvt_ttl_ttk(self, ttv_x, ttv_y, ttv_pred_x, ttv_pred_y, blue, yellow, surgery, orthopedia, jour):
