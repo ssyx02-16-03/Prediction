@@ -96,8 +96,8 @@ class SmileStatus:
     def _make_smile_happiness(self, y, bounds):
         value = y[-1]
         if value < bounds["good"]:
-            return -1
-        elif value > bounds["bad"]:
             return 1
+        elif value > bounds["bad"]:
+            return -1
         return 0
 
