@@ -6,19 +6,18 @@ from elastic_api.TimeToEventLoader import TimeToEventLoader
 
 ONE_HOUR_MILLISECONDS = 60*60*1000
 
-# TODO put proper values here, these were improvised
 time_to_doctor_hysteresis = 0
 time_to_klar_hysteresis = 0
 lookback_time = ONE_HOUR_MILLISECONDS / 2  # the ttx value is retreived for the [now - lookback_time] time point to
 # decide what the change rate is
 
 time_to_doctor_boundaries = {
-    "bad": 20,
-    "good": 50
+    "bad": 120,
+    "good": 60
 }
 time_to_klar_boundaries = {
-    "bad": 100,
-    "good": 300
+    "bad": 60 * 4,
+    "good": 60 * 3.5
 }
 
 class SmileStatus:
