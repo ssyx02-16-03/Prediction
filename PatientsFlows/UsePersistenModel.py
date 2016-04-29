@@ -87,20 +87,30 @@ def predict_now(start_time, end_time, type):
     for i in range(0, num_models, 1):
         #print str(i*10)
         pred.append(models[i].predict(X)[0])
-    return tri, wait, X_pred, pred
+    return X_plot, tri, wait, X_pred, pred
 
 def testing():
     start_time = int(time.mktime(time.strptime("2016-04-25 16:30", "%Y-%m-%d %H:%M"))) * 1000
     end_time = int(time.mktime(time.strptime("2016-04-26 20:07", "%Y-%m-%d %H:%M"))) * 1000
 
-    X_plot, hist, X_pred, pred = predict_now(start_time, end_time, 'TotalTime')
+    X_plot, tri, wait, X_pred, pred = predict_now(start_time, end_time, 'TimeToDoctor')
+    print tri.shape
+    print np.asarray(X_pred)[:, np.newaxis].shape
+    X_pred = np.asarray(X_pred)[:, np.newaxis]
+    X_real = np.concatenate([tri, X_pred], axis=0)
+    X_smoth = np.concatenate((X_plot, np.linspace(X_plot[-1]+1, X_plot[-1]+1+60, X_plot.shape[0])))
+    y_real = np.concatenate((wait, pred))
 
-    lwr = LWRegressor()
-    lwr.fit(X_plot, hist)
-    y = lwr.predict(X_plot)
+
+
+
+    lwr = LWRegressor(sigma=20)
+    lwr.fit(X_real, y_real)
+    y = lwr.predict(X_smoth)
     #print pred, X_pred
 
-    plt.plot(X_plot, hist, c='blue')
-    plt.plot(X_pred, pred, c='yellow')
+    plt.plot(X_smoth, y, c='blue')
+    plt.plot(X_real, y_real, c='green')
+#    plt.plot(X_pred, pred, c='yellow')
     plt.show()
 # testing()

@@ -1,7 +1,7 @@
 # coding=utf-8
 import matplotlib.pyplot as plt
 import os
-
+import config
 from elastic_api import parse_date
 from sklearn.externals import joblib
 from sklearn.model_selection import cross_val_score, cross_val_predict
@@ -16,7 +16,7 @@ X_plot = np.linspace(0, end_time_min-1, end_time_min)[:, np.newaxis]
 num_models = 4
 Xs = []
 ys = []
-model_place = '../SavedModels/'
+model_place = config.saved_models_path
 
 type = 'TimeToTriage'
 for i in range(0, num_models, 1):
@@ -27,11 +27,11 @@ for i in range(0, num_models, 1):
 mpl = MLPRegressor()
 for i in range(0, num_models, 1):
     print 'testing model: ' + str(i*10)
-    mpl_pred = cross_val_score(mpl, Xs[i], ys[i], cv=10, verbose=True)
-    plt.scatter(i, sum(mpl_pred)/len(mpl_pred), label=str(i*10), color=colors[i])
-    print mpl_pred.score()
-    #mpl_pred = cross_val_predict(mpl, Xs[i], ys[i], cv=10, verbose=True)
+    #mpl_pred = cross_val_score(mpl, Xs[i], ys[i], cv=10, verbose=True)
+    #plt.scatter(i, sum(mpl_pred)/len(mpl_pred), label=str(i*10), color=colors[i])
+
+    mpl_pred = cross_val_predict(mpl, Xs[i], ys[i], cv=10, verbose=True)
     #plt.scatter(ys[i], mpl_pred, label=str(i), color=colors[i], marker='x')
-    #plt.plot(X_plot, mpl_pred, label=str(i), color=colors[i])
+    plt.plot(X_plot, mpl_pred, label=str(i), color=colors[i])
 plt.legend(loc='best')
 plt.show()
