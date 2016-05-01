@@ -55,9 +55,9 @@ def get_recent_events(patients):
                 all_events.append(GenericEvent(
                     cc_id=[update["CareContactId"], ""],
                     name=name_generator.get_name_as_array(update["CareContactId"]),
-                    modification_field=[update["ModifiedField"], update["ModifiedFrom"] + " -> " + update["ModifiedTo"]],
+                    modification_field=[update["ModifiedField"] + ": "+ update["ModifiedFrom"] + " -> " + update["ModifiedTo"]],
                     millis_since=int(time.time()*1000 - parse_date.date_to_millis(update["Timestamp"])),
-                    current_location=[patient["Location"], ""]
+                    current_location=patient["Location"]
                 ))
         except KeyError:
             pass
@@ -67,9 +67,9 @@ def get_recent_events(patients):
             all_events.append(GenericEvent(
                 cc_id=event["CareEventId"],
                 name=name_generator.get_name_as_array(event["CareEventId"]),
-                modification_field=[event["Title"], event["Value"]],
+                modification_field=event["Value"],
                 millis_since=int(time.time()*1000 - parse_date.date_to_millis(event["Start"])),
-                current_location=[patient["Location"], ""]
+                current_location=patient["Location"]
             ))
 
     return sort_by_time(all_events)[0:5]
@@ -108,6 +108,6 @@ class GenericEvent:
             "patient_id": self.id,
             "patient_name": self.name,
             "modification_field": self.modification_field,
-            "minutes_since": [self.millis_since / 1000 / 60, ""],
+            "minutes_since": self.millis_since / 1000 / 60,
             "current_location": self.current_location
         }

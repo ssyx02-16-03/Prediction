@@ -21,6 +21,7 @@ guideline_time_limit_minutes = 75
 # if this is True, uncolored patients will show up on the blue torg-view. If false, thos patients are ignored
 SHOW_NEUTRAL_PATIENTS = False
 
+
 def run():
     """
     This function will return a json with all the data needed to draw the patient overview for the blue and yellow
