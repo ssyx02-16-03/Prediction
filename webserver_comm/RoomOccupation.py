@@ -122,19 +122,19 @@ def get_patient_department(name):
     except:
         return "default"
 
-    if first_letter == "b" || first_letter == "B":
+    if first_letter == "b" or first_letter == "B":
         return "medicineBlue"
 
-    if first_letter == "g" || first_letter == "G":
+    if first_letter == "g" or first_letter == "G":
         return "medicineYellow"
 
-    if first_letter == "k" || first_letter == "K":
+    if first_letter == "k" or first_letter == "K":
         return "surgery"
 
-    if first_letter == "o" || first_letter == "O":
+    if first_letter == "o" or first_letter == "O":
         return "orthoped"
 
-    if first_letter == "j" || first_letter == "J":
+    if first_letter == "j" or first_letter == "J":
         return "jour"
 
     return "default"
