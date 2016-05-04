@@ -68,8 +68,9 @@ class AbstractLoader(object):
 
     def get_times_of_day(self):
         times = []
-        for i in range(0, (self.end_time-self.start_time)/(self.interval), 1):
-            times.append((i*self.interval/(60*60*1000))%24)
+
+        for time in range(self.start_time, self.end_time, 1):
+            times.append(time/60000 % 1440)
         return times
 
     def get_weekdays(self):
