@@ -20,7 +20,7 @@ def filter_zeroes(times):
 
 
 def moving_average(loader):
-    percent_new = 0.1
+    percent_new = 0.2
     percent_old = 1-percent_new
 
     times = loader.get_event_times()
@@ -102,13 +102,13 @@ def rolling_average(loader, sweep_length, sweep_interval):
 
 
 # initialize the loader
-start_time = "2016-03-30 08:00"
-end_time = "2016-03-31 08:00"
+start_time = "2016-05-03 11:00"
+end_time = "2016-05-04 11:00"
 interval = 60
 start_time_min = parse_date.date_to_millis(start_time) / ONE_MINUTE_MILLIS
 end_time_min = (parse_date.date_to_millis(end_time)-parse_date.date_to_millis(start_time)) / ONE_MINUTE_MILLIS
 ttt = TimeToEventLoader(start_time, end_time, interval)
-ttt.set_search_triage()
+ttt.set_search_doctor()
 X2 = ttt.get_times()[:, np.newaxis]
 X2 = (X2/ONE_MINUTE_MILLIS-start_time_min)+interval*2
 

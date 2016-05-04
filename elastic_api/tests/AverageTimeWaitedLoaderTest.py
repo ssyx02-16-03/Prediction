@@ -1,6 +1,7 @@
 from elastic_api.AverageTimeWaitedLoader import AverageTimeWaitedLoader
 import matplotlib.pyplot as plt
 
+
 start_time = "2016-03-22 00:00"
 end_time = "2016-03-23 00:00"
 interval = 5

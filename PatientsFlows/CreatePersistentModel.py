@@ -18,12 +18,12 @@ import matplotlib.pyplot as plt
 MODEL_PREDICTION_RANGE = 30  # how many minutes into the future the model should look
 
 model_place = config.saved_models_path#'../SavedModels/'
-start_time = "2016-04-11 12:00"
-end_time = "2016-04-16 12:00"
+start_time = "2016-04-06 12:00"
+end_time = "2016-04-20 12:00"
 interval = 10
 start_time_min = parse_date.date_to_millis(start_time) / 60000
 end_time_min = (parse_date.date_to_millis(end_time) - parse_date.date_to_millis(start_time)) / 60000
-X_plot = np.linspace(0, end_time_min-1, end_time_min)[:, np.newaxis]
+X_plot = np.linspace(0, end_time_min-1, end_time_min/10)[:, np.newaxis]
 
 
 def get_uniform_axes(X, y, method):
@@ -47,7 +47,7 @@ def save_data(X, y, min_shift, type):
 
 def create_model(max_shift, type):
     print 'Creating ' + type + ' models for up to ' + str(max_shift) + ' minutes'
-    ttt = TimeToEventLoader(start_time, end_time, 0)
+    ttt = TimeToEventLoader(start_time, end_time, interval)
     ttt.set_event_name(type)
     arr, tri, wait, real = RealTimeWait.moving_average(ttt)
     tri = np.asarray(tri)
@@ -79,23 +79,23 @@ def create_model(max_shift, type):
     y3 = get_uniform_axes(tri2, speed_tri, model)
     y4 = get_uniform_axes(X4, y4, model)
     y5 = get_uniform_axes(X5, y5, model)
-    y6 = np.roll(y1, 30)
+    #y6 = np.roll(y1, 30)
     #y7 = np.roll(y1, 15)
-    #y6 = shift(y1.tolist(), 30, cval=0)
-    #y7 = shift(y1.tolist(), 15, cval=0)
-    y7 = untriage.get_times_of_day()
+    y6 = shift(y1.tolist(), 3, cval=0)
+    y7 = shift(y1.tolist(), 2, cval=0)
+    #y7 = untriage.get_times_of_day()
     X = np.column_stack([y1, y2, y3, y4, y5, y6, y7])
     ys = []
     mpl = MLPRegressor()
     for i in range(0, max_shift + 1, 10):
         print 'Fitting model shifted ' + str(i) + ' minutes'
-        y = np.roll(y1, -i)
+        y = np.roll(y1, -i/10)
         save_data(X, y, i, type)
         ys.append(y)
         fit_and_save_model(mpl, X, y, i, 'mpl', type)
     #fit_and_save_model(mpl, X, ys, max_shift, 'totmpl', type)
 
-create_model(MODEL_PREDICTION_RANGE, 'TimeToFinished')
+create_model(MODEL_PREDICTION_RANGE, 'TotalTime')
 create_model(MODEL_PREDICTION_RANGE, 'TimeToTriage')
 create_model(MODEL_PREDICTION_RANGE, 'TimeToDoctor')
-create_model(MODEL_PREDICTION_RANGE, 'TotalTime')
+create_model(MODEL_PREDICTION_RANGE, 'TimeToFinished')

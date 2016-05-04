@@ -5,6 +5,7 @@ from scipy.ndimage.interpolation import shift
 from elastic_api import parse_date
 from sklearn import neighbors
 from sklearn.linear_model import Ridge
+from sklearn.model_selection import cross_val_predict
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.neural_network import MLPRegressor
@@ -73,7 +74,7 @@ start_time_min = parse_date.date_to_millis(start_time)/60000
 end_time_min = (parse_date.date_to_millis(end_time)-parse_date.date_to_millis(start_time))/60000
 
 ttt = TimeToEventLoader(start_time, end_time, 0)
-ttt.set_search_triage()
+ttt.set_event_name('TimeToTriage')
 X1, y1 = run(ttt)
 X_plot = np.linspace(0, end_time_min, 5*24*60)[:, np.newaxis]
 X2, y2, y3 = get_speeds(ttt)
@@ -152,7 +153,7 @@ def plot_time():
     plt.plot(X_plot, y2_p)
     plt.plot(X_plot, y3_p)
     plt.show()
-plot_time()
+plot_cross()
 
 '''
 gp.fit(X, y)

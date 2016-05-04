@@ -34,7 +34,6 @@ def moving_average(loader):
     times = filter_zeroes(times) # filter out all zero event times. (patient was never even in the queue)
     both_times = np.column_stack(times)
     both_times = both_times[np.argsort(both_times[:, 1])]
-
     arr_times = both_times[:, 0]
     event_times = both_times[:, 1]
     wait_times = (both_times[:, 1]-both_times[:, 0])/60000
