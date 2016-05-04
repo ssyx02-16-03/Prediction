@@ -117,15 +117,27 @@ def get_patient_department(name):
     if name == "":  # dodge the array out of bounds exception
         return "default"
 
-    first_letter = name[0].lower()
-    if first_letter == "b":
+    try:
+        first_letter = name[0].lower()
+    except:
+        return "default"
+
+    if first_letter == "b" || first_letter == "B":
         return "medicineBlue"
 
-    if first_letter == "g":
+    if first_letter == "g" || first_letter == "G":
         return "medicineYellow"
 
-    return "default"
+    if first_letter == "k" || first_letter == "K":
+        return "surgery"
 
+    if first_letter == "o" || first_letter == "O":
+        return "orthoped"
+
+    if first_letter == "j" || first_letter == "J":
+        return "jour"
+
+    return "default"
 
 class Room:
     """
