@@ -51,12 +51,12 @@ class Main:
 
         smile_status = SmileStatus()
         smiles_blue, smile_yellow = smile_status.get_smile_data()
-        print smiles_blue
+        print(smiles_blue)
         self.amq.send_package("smile_face_blue", smiles_blue)
         self.amq.send_package("smile_face_yellow", smile_yellow)
 
         self.amq.send_package("status_message", status_message.get_message())
 
 def run():
-    print "starting..."
+    print("starting...")
     Main().main()
