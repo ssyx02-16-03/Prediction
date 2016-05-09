@@ -26,7 +26,7 @@ class QueueTimeGraphs:
             self.wait_times = [0]
 
     def moving_average(self):
-        PERCENT_NEW = 0.1
+        PERCENT_NEW = 0.2
         PERCENT_OLD = 1 - PERCENT_NEW
 
         wait_means = []

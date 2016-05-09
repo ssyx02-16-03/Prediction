@@ -22,8 +22,9 @@ class Main:
         while 1:
             last_time = time.time()
             self.iteration()
-            if last_time + FRAME_TIME_INTERVAL - time.time() > 0:
-                time.sleep(last_time + FRAME_TIME_INTERVAL - time.time())
+            time_to_wait = last_time + FRAME_TIME_INTERVAL - time.time()
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
 
     def iteration(self):
         """

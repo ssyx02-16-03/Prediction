@@ -11,23 +11,28 @@ from sklearn.externals import joblib
 
 from elastic_api.TimeToEventLoader import TimeToEventLoader
 from elastic_api.UntriagedLoader import UntriagedLoader
+from predictions.Estimators.LWRegressor import LWRegressor
+import matplotlib.pyplot as plt
 
 
-MODEL_PREDICTION_RANGE = 60  # how many minutes into the future the model should look
+MODEL_PREDICTION_RANGE = 30  # how many minutes into the future the model should look
 
 model_place = config.saved_models_path#'../SavedModels/'
-start_time = "2016-04-11 12:00"
-end_time = "2016-04-21 12:00"
+start_time = "2016-04-06 12:00"
+end_time = "2016-04-20 12:00"
 interval = 10
 start_time_min = parse_date.date_to_millis(start_time) / 60000
 end_time_min = (parse_date.date_to_millis(end_time) - parse_date.date_to_millis(start_time)) / 60000
-X_plot = np.linspace(0, end_time_min, end_time_min  + 1)[:, np.newaxis]
-print X_plot
+X_plot = np.linspace(0, end_time_min-1, end_time_min/10)[:, np.newaxis]
 
 
 def get_uniform_axes(X, y, method):
     method.fit(X, y)
-    return method.predict(X_plot)
+    y_ = method.predict(X_plot)
+#    plt.plot(X,y)
+#    plt.plot(X_plot, y_)
+#    plt.show()
+    return y_
 
 
 def fit_and_save_model(model, X_, y_, mins, name, type):
@@ -42,7 +47,7 @@ def save_data(X, y, min_shift, type):
 
 def create_model(max_shift, type):
     print 'Creating ' + type + ' models for up to ' + str(max_shift) + ' minutes'
-    ttt = TimeToEventLoader(start_time, end_time, 0)
+    ttt = TimeToEventLoader(start_time, end_time, interval)
     ttt.set_event_name(type)
     arr, tri, wait, real = RealTimeWait.moving_average(ttt)
     tri = np.asarray(tri)
@@ -53,6 +58,7 @@ def create_model(max_shift, type):
     arr = arr / 60000 - start_time_min
     tri2 = np.asarray(tri2)
     tri2 = tri2 / 60000 - start_time_min
+
     untriage = UntriagedLoader(start_time, end_time, interval)
     untriage.set_event_name(type)
     y4 = untriage.load_vector()
@@ -67,25 +73,29 @@ def create_model(max_shift, type):
 
     print 'All data picked up, transforming it to uniform axes'
     model = neighbors.KNeighborsRegressor(5, weights='distance')
+    #model = LWRegressor(sigma=50)
     y1 = get_uniform_axes(tri, wait, model)
     y2 = get_uniform_axes(arr, speed_arr, model)
     y3 = get_uniform_axes(tri2, speed_tri, model)
     y4 = get_uniform_axes(X4, y4, model)
     y5 = get_uniform_axes(X5, y5, model)
-    y6 = shift(y1, 30, cval=0)
-    y7 = shift(y1, 15, cval=0)
-
+    #y6 = np.roll(y1, 30)
+    #y7 = np.roll(y1, 15)
+    y6 = shift(y1.tolist(), 3, cval=0)
+    y7 = shift(y1.tolist(), 2, cval=0)
+    #y7 = untriage.get_times_of_day()
     X = np.column_stack([y1, y2, y3, y4, y5, y6, y7])
     ys = []
     mpl = MLPRegressor()
     for i in range(0, max_shift + 1, 10):
-        print i
-        y = (shift(y1, -i, cval=0))
-        #save_data(X, y, i, type)
+        print 'Fitting model shifted ' + str(i) + ' minutes'
+        y = np.roll(y1, -i/10)
+        save_data(X, y, i, type)
         ys.append(y)
         fit_and_save_model(mpl, X, y, i, 'mpl', type)
+    #fit_and_save_model(mpl, X, ys, max_shift, 'totmpl', type)
 
-create_model(MODEL_PREDICTION_RANGE, 'TimeToFinished')
+create_model(MODEL_PREDICTION_RANGE, 'TotalTime')
 create_model(MODEL_PREDICTION_RANGE, 'TimeToTriage')
 create_model(MODEL_PREDICTION_RANGE, 'TimeToDoctor')
-create_model(MODEL_PREDICTION_RANGE, 'TotalTime')
+create_model(MODEL_PREDICTION_RANGE, 'TimeToFinished')

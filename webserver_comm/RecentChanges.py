@@ -7,6 +7,8 @@ from elastic_api import parse_date
 import time
 num_lines = 3
 
+# if true, uncolored patients will be shown on the torg-views. if false, they will be ignored.
+SHOW_NEUTRAL_PATIENTS = False
 
 def run():
     medicine_patients = GeneralQuery().get_patients_of_team("NAKME")
@@ -23,8 +25,9 @@ def run():
         elif department == "medicineYellow":
             yellow_patients.append(patient)
         else:
-            yellow_patients.append(patient)
-            blue_patients.append(patient)
+            if SHOW_NEUTRAL_PATIENTS:
+                yellow_patients.append(patient)
+                blue_patients.append(patient)
 
     blue_events = get_recent_events(blue_patients)
     yellow_events = get_recent_events(yellow_patients)
@@ -52,9 +55,9 @@ def get_recent_events(patients):
                 all_events.append(GenericEvent(
                     cc_id=[update["CareContactId"], ""],
                     name=name_generator.get_name_as_array(update["CareContactId"]),
-                    modification_field=[update["ModifiedField"], update["ModifiedFrom"] + " -> " + update["ModifiedTo"]],
+                    modification_field=[update["ModifiedField"] + ": "+ update["ModifiedFrom"] + " -> " + update["ModifiedTo"]],
                     millis_since=int(time.time()*1000 - parse_date.date_to_millis(update["Timestamp"])),
-                    current_location=[patient["Location"], ""]
+                    current_location=patient["Location"]
                 ))
         except KeyError:
             pass
@@ -64,9 +67,9 @@ def get_recent_events(patients):
             all_events.append(GenericEvent(
                 cc_id=event["CareEventId"],
                 name=name_generator.get_name_as_array(event["CareEventId"]),
-                modification_field=[event["Title"], event["Value"]],
+                modification_field=event["Value"],
                 millis_since=int(time.time()*1000 - parse_date.date_to_millis(event["Start"])),
-                current_location=[patient["Location"], ""]
+                current_location=patient["Location"]
             ))
 
     return sort_by_time(all_events)[0:5]
@@ -105,6 +108,6 @@ class GenericEvent:
             "patient_id": self.id,
             "patient_name": self.name,
             "modification_field": self.modification_field,
-            "minutes_since": [self.millis_since / 1000 / 60, ""],
+            "minutes_since": self.millis_since / 1000 / 60,
             "current_location": self.current_location
         }
