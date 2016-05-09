@@ -1,72 +1,71 @@
 import numpy as np
+from elastic_api import parse_date
 from WaitTimesPerPatient.TTD import TTD
-from elastic_api.UntriagedLoader import UntriagedLoader
-from elastic_api.TimeToEventLoader import TimeToEventLoader
+from prediction_api.ClevererQuerier import ClevererQuerier
 import cPickle
 
 
-def load_state_nbrs(times, loader):
-    """
-    use loader to get values of quantiative state variable at times
-    lots of time wasted inside of this one apparently...
-    """
-    i = 1
-    nbrs = np.array([])
+def to_vector(times, loader_function):
+    vector = np.array([])
+    i = 0
     for timee in times:
-        i = i + 1
+        i += 1
         if i % 20 == 0:
             print i
-        nbrs = np.append(nbrs, t_waiters_loader.load_value(timee, 0))
-    return nbrs
+        vector = np.append(vector, loader_function(int(timee)))
+    return vector.reshape(-1, 1)
 
-time1 = "2016-03-08 18:00"
-#time2 = "2016-03-14 00:00"
-time2 = "2016-03-08 22:00"
+time1_crap = "2016-03-08 00:00"
+time2_crap = "2016-05-03 00:00"
+time1 = parse_date.date_to_millis(time1_crap)
+time2 = parse_date.date_to_millis(time2_crap)
+time_list = range(time1, time2, 1000 * 60 * 60)
 
-ttdModel = TTD(time1, time2)
-seat_times = ttdModel.get_seat_time()  # for most loader-methods
-weektimes = ttdModel.get_weektimes()  # for comprehensible plots etc
-weektimes = weektimes[...,np.newaxis]
-print weektimes.shape
-ttd = ttdModel.get_ttd()
+seat_times = time_list
 
-# load deterministic timeofweek-variable using separate model
-with open('../TTDWeek/model.pkl', 'r') as file:
-    deterministic_model = cPickle.load(file)
-det_times = deterministic_model.predict(weektimes)
+#ttdModel = TTD(time1, time2)
+#seat_times = ttdModel.get_seat_time()  # for most loader-methods
+#weektimes = ttdModel.get_weektimes()  # for comprehensible plots etc
+#weektimes = weektimes[..., np.newaxis]
+#ttd = ttdModel.get_ttd().reshape(-1, 1)
 
-# load triage-frequency using TimeToEventLoader
-# 15-20 triages per hour... reasonable???
-interval = 60 * 1000 * 100 # to calculate the fequency in, 60 minutes
-t_frequency = np.array([])
-for timee in seat_times:
-    freqLoader = TimeToEventLoader(int(timee) - interval, int(timee), 0)
-    freqLoader.set_search_triage()
-    kalle, tttArr, polle = freqLoader.get_event_times()
-    t_frequency = np.append(t_frequency, len(tttArr))
+# load deterministic timeofweek-variable vector using separate model
+# with open('../TTDWeek/model.pkl', 'r') as file:
+#     deterministic_model = cPickle.load(file)
+# det_times = deterministic_model.predict(weektimes)
 
-# load rollingaverage-variable vector using separate model
-# TODO
+# load state-variable vectors
+cq = ClevererQuerier()
 
-# load vectors of state-variables at times weektimes()
-t_waiters_loader = UntriagedLoader(time1, time2, 0)
-t_waiters_loader.set_search_triage()
-d_waiters_loader = UntriagedLoader(time1, time2, 0)
-d_waiters_loader.set_search_doctor()
-print t_waiters_loader
+fttt60 = to_vector(seat_times, cq.avg_future_ttt_60)
 
-t_waiters = load_state_nbrs(seat_times, t_waiters_loader)
-d_waiters = load_state_nbrs(seat_times, d_waiters_loader)
-print t_waiters.shape, t_waiters
-# TODO much more going herez
+time = {}
+#time["det_times"] = det_times
+time["rttt30"] = to_vector(seat_times, cq.avg_rolling_ttt_30)
+time["rttt60"] = to_vector(seat_times, cq.avg_rolling_ttt_60)
 
-# save data
-np.savez(
-        'data.pkl',
-        weektimes=weektimes,
-        ttd=ttd,
-        det_times=det_times,
-        t_frequency = t_frequency,
-        t_waiters=t_waiters,
-        d_waiters=d_waiters
+workload = {}
+workload["untriaged"] = to_vector(seat_times, cq.untriageds)
+workload["untreated"] = to_vector(seat_times, cq.untreateds)
+workload["untreated_red"] = to_vector(seat_times, cq.untreateds_red)
+workload["untreated_yellow"] = to_vector(seat_times, cq.untreateds_yellow)
+workload["alarm"] = to_vector(seat_times, cq.larm_patients)
+workload["ongoing"] = to_vector(seat_times, cq.ongoings)
+workload["unroomed"] = to_vector(seat_times, cq.unroomed)
+
+capacity = {}
+capacity["doctors"] = to_vector(seat_times, cq.doctors)
+capacity["teams"] = to_vector(seat_times, cq.teams)
+capacity["speed_doctors_30"] = to_vector(seat_times, cq.speed_doctors_30)
+capacity["speed_doctors_60"] = to_vector(seat_times, cq.speed_doctors_60)
+capacity["speed_triage_30"] = to_vector(seat_times, cq.speed_triage_30)
+capacity["speed_triage_60"] = to_vector(seat_times, cq.speed_triage_60)
+
+data = dict(
+        fttt60=fttt60,
+        time=time,
+        workload=workload,
+        capacity=capacity,
         )
+with open("data", "w") as file:
+    cPickle.dump(data, file)

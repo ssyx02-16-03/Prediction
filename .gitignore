@@ -72,3 +72,4 @@ target/
 
 #en pryl min vim skapar
 *.tmp
+tags
