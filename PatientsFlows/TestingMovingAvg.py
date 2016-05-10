@@ -1,3 +1,4 @@
+# coding=utf-8
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,8 +20,7 @@ def filter_zeroes(times):
     return filtered_times
 
 
-def moving_average(loader):
-    percent_new = 0.2
+def moving_average(loader, percent_new):
     percent_old = 1-percent_new
 
     times = loader.get_event_times()
@@ -102,39 +102,41 @@ def rolling_average(loader, sweep_length, sweep_interval):
 
 
 # initialize the loader
-start_time = "2016-05-03 11:00"
-end_time = "2016-05-04 11:00"
+start_time = "2016-04-05 00:00"
+end_time = "2016-04-07 00:00"
 interval = 60
 start_time_min = parse_date.date_to_millis(start_time) / ONE_MINUTE_MILLIS
 end_time_min = (parse_date.date_to_millis(end_time)-parse_date.date_to_millis(start_time)) / ONE_MINUTE_MILLIS
 ttt = TimeToEventLoader(start_time, end_time, interval)
-ttt.set_search_doctor()
+ttt.set_search_triage()
 X2 = ttt.get_times()[:, np.newaxis]
-X2 = (X2/ONE_MINUTE_MILLIS-start_time_min)+interval*2
+X2 = (X2/ONE_MINUTE_MILLIS-start_time_min)+interval*2-1440
 
 
-X1, y1, y2 = moving_average(ttt)
+X1, y1, y2 = moving_average(ttt, 0.2)
+X1 -= 1440
 plt.plot(X1, y1, c='blue', label='10% nya')
 plt.scatter(X1, y2, c='black', marker='x', label='Faktiska TTT-tider')
 
-y3 = np.convolve(y2, np.ones((10,))/10, mode='same')
-plt.plot(X1, y3, c='cyan', label='Glidande 10p')
+y3 = np.convolve(y2, np.ones((10,))/10, mode='full')[:len(y2)]
+plt.plot(X1, y3, c='green', label='Glidande 10p')
 
-y4 = np.convolve(y2, np.ones((30,))/30, mode='same')
-plt.plot(X1, y4, c='green', label='Glidande 30p')
-
+ttt.set_offset(-60)
 y5 = ttt.load_vector()/ONE_MINUTE_MILLIS
 plt.plot(X2, y5, c='purple', label='60 min medel')
 
-y6 = exp_moving_average(y2, 10)
-plt.plot(X1, y6, c='orange', label='Exp glidande 10p')
+y6 = exp_moving_average(y2, 20)
+plt.plot(X1, y6, c='orange', label='Exp glidande 20p')
 
-X_rolling, y_rolling = rolling_average(loader=ttt, sweep_interval=ONE_MINUTE_MILLIS, sweep_length=ONE_MINUTE_MILLIS*60)
-plt.plot(X_rolling, y_rolling, c='black', label='Rolling average 60 min')
+plt.xlabel(u'minuter på dagen')
+plt.ylabel('TTT i minuter')
+
+#X_rolling, y_rolling = rolling_average(loader=ttt, sweep_interval=ONE_MINUTE_MILLIS, sweep_length=ONE_MINUTE_MILLIS*60)
+#plt.plot(X_rolling, y_rolling, c='black', label='Rolling average 60 min')
 
 # science lol
 # plt.plot(X1, (y1+y3+y4+y6)/5, c='black', label='super_average_metric')
 
-plt.legend(loc='upper right')
+plt.legend(loc='upper left')
 plt.show()
 

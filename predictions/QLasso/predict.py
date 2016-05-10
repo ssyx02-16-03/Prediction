@@ -1,6 +1,7 @@
 import cPickle
 import numpy as np
 from sklearn import linear_model
+from sklearn.model_selection import cross_val_predict
 from sklearn.svm import SVR
 import matplotlib.pyplot as plt
 
@@ -56,10 +57,18 @@ y_fit = y[:-300]
 X_test = X[-300:]
 y_test = y[-300:]
 
-lasso = linear_model.Lasso(alpha=0.2, max_iter=100000)
+lasso = linear_model.LassoCV(max_iter=100000)
+
+y_pred = cross_val_predict(lasso, X, y, verbose=True, cv=10)
+
+plt.scatter(y, y_pred, marker='+')
+plt.show()
+
+
 lasso.fit(X_fit, y_fit)
+print lasso
 print lasso.coef_
-y_pred = lasso.predict(X_test)
+#y_pred = lasso.predict(X_test)
 MSE = np.mean((y_pred - y_test) ** 2)
 STDEV = np.sqrt(MSE)
 print STDEV
@@ -69,8 +78,8 @@ print STDEV
 # svr.fit(X_fit[:,:9], y_fit.ravel())
 # y_svr = svr.predict(X_test[:,:9])
 
-plt.plot(y_test, y_test)
-plt.scatter(y_test, y_pred, marker='x', c='b')
+#plt.plot(y_test, y_test)
+#plt.scatter(y_test, y_pred, marker='x', c='b')
 # plt.scatter(y_test, y_svr, marker='x', c='r')
 # plt.axis([0, 50, 0, 50])
 plt.show()
