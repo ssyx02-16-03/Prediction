@@ -31,6 +31,9 @@ future_time["future_ttt120"] = to_vector(times, cq.avg_future_ttt_120)
 future_time["future_ttd30"] = to_vector(times, cq.avg_future_ttd_30)
 future_time["future_ttd60"] = to_vector(times, cq.avg_future_ttd_60)
 future_time["future_ttd120"] = to_vector(times, cq.avg_future_ttd_120)
+future_time["future_ttk30"] = to_vector(times, cq.avg_future_ttk_30)
+future_time["future_ttk60"] = to_vector(times, cq.avg_future_ttk_60)
+future_time["future_ttk120"] = to_vector(times, cq.avg_future_ttk_120)
 
 # these ones have the same dimension as the predicted variable
 time = {}

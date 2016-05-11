@@ -115,6 +115,15 @@ class ClevererQuerier:
     def avg_future_ttt_120(self, timee):
         return self._avg_future_ttx(timee, 120, "Triage")
 
+    def avg_future_ttk_30(self, timee):
+        return self._avg_future_ttx(timee, 30, "Klar")
+
+    def avg_future_ttk_60(self, timee):
+        return self._avg_future_ttx(timee, 60, "Klar")
+
+    def avg_future_ttk_120(self, timee):
+        return self._avg_future_ttx(timee, 120, "Klar")
+
     def avg_rolling_ttt_30(self, timee):
         """Return average ttt of triages occuring in past 30 minutes."""
         return self._avg_rolling_ttx(timee, 30, "Triage")
@@ -463,10 +472,11 @@ ongyel = [cq.ongoings_yellow(time) for time in times]
 unryel = [cq.unroomed_yellow(time) for time in times]
 rttd30 = [cq.avg_rolling_ttd_30(time) for time in times]
 fttd60 = [cq.avg_future_ttd_60(time) for time in times]
+fttk30 = [cq.avg_future_ttk_30(time) for time in times]
 print ongs, unts, drs, spdrs30, spdrs60, sptri30, sptri60, wtrsdr, utrtdsblu
 print utrtdsgre, utrtdsyel
 print utrtdsora, utrtdsred, unroomedz, larms, teams
 print fttt, rttt30, rttt60, newp60
 print avgwtri, avgwdoc, lpuntr, untrdsyel, ongyel, unryel
-print rttd30, fttd60
+print rttd30, fttd60, fttk30
 '''
