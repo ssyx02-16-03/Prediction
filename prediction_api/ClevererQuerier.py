@@ -124,6 +124,15 @@ class ClevererQuerier:
     def avg_future_ttk_120(self, timee):
         return self._avg_future_ttx(timee, 120, "Klar")
 
+    def avg_rolling_ttk_30(self, timee):
+        return self._avg_rolling_ttx(timee, 30, "Klar")
+
+    def avg_rolling_ttk_60(self, timee):
+        return self._avg_rolling_ttx(timee, 60, "Klar")
+
+    def avg_rolling_ttk_120(self, timee):
+        return self._avg_rolling_ttx(timee, 120, "Klar")
+
     def avg_rolling_ttt_30(self, timee):
         """Return average ttt of triages occuring in past 30 minutes."""
         return self._avg_rolling_ttx(timee, 30, "Triage")
@@ -202,6 +211,35 @@ class ClevererQuerier:
 
     def ongoings_red(self, timee):
         return self._ongoings_color(timee, u"Röd")
+
+    def _unfinished(self, timee):
+        patients = self._current_patients(timee)
+        unfinished = []
+        for patient in patients:
+            events = patient["_source"]["Events"]
+            for event in events:
+                if event["Title"] == "Klar":
+                    event_time = parse_date.date_to_millis(event["Start"])
+                    if event_time > timee:
+                        unfinished.append(patient)
+        return unfinished
+
+    def unfinished(self, timee):
+        unfinished = self._unfinished(timee)
+        return len(unfinished)
+
+    def avg_wait_finished(self, timee):
+        unfinisheds = self._unfinished(timee)
+        waited_times = []
+        for patient in unfinisheds:
+                arr_crap = patient["_source"]["CareContactRegistrationTime"]
+                arrival_time = parse_date.date_to_millis(arr_crap)
+                waited_time = timee - arrival_time
+                waited_times.append(waited_time)
+        if len(waited_times) > 0:
+            return int(sum(waited_times) / len(waited_times))
+        else:
+            return int(0)
 
     def _waiters(self, timee, event_name):
         patients = self._current_patients(timee)
@@ -473,10 +511,13 @@ unryel = [cq.unroomed_yellow(time) for time in times]
 rttd30 = [cq.avg_rolling_ttd_30(time) for time in times]
 fttd60 = [cq.avg_future_ttd_60(time) for time in times]
 fttk30 = [cq.avg_future_ttk_30(time) for time in times]
+rttk30 = [cq.avg_rolling_ttk_60(time) for time in times]
+unfin = [cq.unfinished(time) for time in times]
+avgtfin = [cq.avg_wait_finished(time) for time in times]
 print ongs, unts, drs, spdrs30, spdrs60, sptri30, sptri60, wtrsdr, utrtdsblu
 print utrtdsgre, utrtdsyel
 print utrtdsora, utrtdsred, unroomedz, larms, teams
 print fttt, rttt30, rttt60, newp60
 print avgwtri, avgwdoc, lpuntr, untrdsyel, ongyel, unryel
-print rttd30, fttd60, fttk30
+print rttd30, fttd60, fttk30, rttk30, unfin, ongs, avgtfin
 '''

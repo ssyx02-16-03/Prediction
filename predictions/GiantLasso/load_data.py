@@ -43,6 +43,9 @@ time["rolling_ttt120"] = to_vector(times, cq.avg_rolling_ttt_120)
 time["rolling_ttd30"] = to_vector(times, cq.avg_rolling_ttd_30)
 time["rolling_ttd60"] = to_vector(times, cq.avg_rolling_ttd_60)
 time["rolling_ttd120"] = to_vector(times, cq.avg_rolling_ttd_120)
+time["rolling_ttk30"] = to_vector(times, cq.avg_rolling_ttk_30)
+time["rolling_ttk60"] = to_vector(times, cq.avg_rolling_ttk_60)
+time["rolling_ttk120"] = to_vector(times, cq.avg_rolling_ttk_120)
 
 # these ones probably have positive effect on wait time
 workload = {}
@@ -81,6 +84,8 @@ workload["treated_red"] = workload["ongoing_red"] - workload["untreated_red"]
 workload["larm_untreated"] = to_vector(times, cq.larm_patients_untreated)
 workload["larm"] = to_vector(times, cq.larm_patients)
 
+workload["unfinished"] = to_vector(times, cq.unfinished)
+
 # these ones probably have negative effect on wait time
 capacity = {}
 capacity["doctors"] = to_vector(times, cq.doctors)
@@ -96,6 +101,7 @@ capacity["speed_triage_120"] = to_vector(times, cq.speed_triage_120)
 unknown_dim = {}
 unknown_dim["waited_triage"] = to_vector(times, cq.avg_wait_triage)
 unknown_dim["waited_doctor"] = to_vector(times, cq.avg_wait_doctor)
+unknown_dim["waited_finished"] = to_vector(times, cq.avg_wait_finished)
 
 data = dict(
         measurement_times=times,
