@@ -96,6 +96,9 @@ capacity["speed_doctors_120"] = to_vector(times, cq.speed_doctors_120)
 capacity["speed_triage_30"] = to_vector(times, cq.speed_triage_30)
 capacity["speed_triage_60"] = to_vector(times, cq.speed_triage_60)
 capacity["speed_triage_120"] = to_vector(times, cq.speed_triage_120)
+capacity["speed_finished_30"] = to_vector(times, cq.speed_finished_30)
+capacity["speed_finished_60"] = to_vector(times, cq.speed_finished_60)
+capacity["speed_finished_120"] = to_vector(times, cq.speed_finished_120)
 
 # no clue about the effect of these guys
 unknown_dim = {}

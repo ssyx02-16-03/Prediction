@@ -414,6 +414,10 @@ class ClevererQuerier:
         events_in_window = self._type_events_in_window(time1, time2, u"TRIAGE")
         return events_in_window
 
+    def _klar_events_in_window(self, time1, time2):
+        events_in_window = self._type_events_in_window(time1, time2, u"KLAR")
+        return events_in_window
+
     def doctors(self, timee):
         """Return number of doctor tags in past hour events."""
         one_hr_bk = timee - 60 * 60 * 1000
@@ -468,6 +472,21 @@ class ClevererQuerier:
         triage_events = self._triage_events_in_window(two_hr_bk, timee)
         return len(triage_events)
 
+    def speed_finished_30(self, timee):
+        half_hr_bk = timee - 30 * 60 * 1000
+        triage_events = self._klar_events_in_window(half_hr_bk, timee)
+        return len(triage_events)
+
+    def speed_finished_60(self, timee):
+        one_hr_bk = timee - 60 * 60 * 1000
+        triage_events = self._klar_events_in_window(one_hr_bk, timee)
+        return len(triage_events)
+
+    def speed_finished_120(self, timee):
+        two_hr_bk = timee - 120 * 60 * 1000
+        triage_events = self._klar_events_in_window(two_hr_bk, timee)
+        return len(triage_events)
+
 '''
 # test
 time1_crap = "2016-03-11 11:30"
@@ -514,10 +533,14 @@ fttk30 = [cq.avg_future_ttk_30(time) for time in times]
 rttk30 = [cq.avg_rolling_ttk_60(time) for time in times]
 unfin = [cq.unfinished(time) for time in times]
 avgtfin = [cq.avg_wait_finished(time) for time in times]
+spfin30 = [cq.speed_finished_30(time) for time in times]
+spfin60 = [cq.speed_finished_60(time) for time in times]
+spfin120 = [cq.speed_finished_120(time) for time in times]
 print ongs, unts, drs, spdrs30, spdrs60, sptri30, sptri60, wtrsdr, utrtdsblu
 print utrtdsgre, utrtdsyel
 print utrtdsora, utrtdsred, unroomedz, larms, teams
 print fttt, rttt30, rttt60, newp60
 print avgwtri, avgwdoc, lpuntr, untrdsyel, ongyel, unryel
 print rttd30, fttd60, fttk30, rttk30, unfin, ongs, avgtfin
+print spfin30, spfin60, spfin120
 '''
